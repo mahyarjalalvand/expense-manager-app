@@ -1,0 +1,10 @@
+import { Hono } from "hono";
+import healthRoutes from "./routes/health.routes.js";
+import transactionsRoutes from "./routes/transactions.routes.js";
+
+const app = new Hono();
+
+app.route("/api/health", healthRoutes);
+app.route("/api/transactions", transactionsRoutes);
+
+export default app;
