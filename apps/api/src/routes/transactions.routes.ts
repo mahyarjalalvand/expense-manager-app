@@ -15,7 +15,12 @@ transactionsRoutes.get("/:id", async (c) => {
   const id = c.req.param("id");
   const result = await db.select().from(transactions).where(eq(transactions.id, id));
 
-  return c.json(result[0]);
+  const transaction = result[0];
+  if (!transaction) {
+    return c.json({ message: "Transaction not found" }, 404);
+  }
+
+  return c.json(transaction);
 });
 
 transactionsRoutes.post("/", async (c) => {
@@ -32,6 +37,33 @@ transactionsRoutes.post("/", async (c) => {
     .returning();
 
   return c.json(result[0], 201);
+});
+
+transactionsRoutes.patch("/:id", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<Partial<Transaction>>();
+
+  const result = await db
+    .update(transactions)
+    .set({ ...body, updatedAt: new Date() })
+    .where(eq(transactions.id, id))
+    .returning();
+  const transaction = result[0];
+  if (!transaction) {
+    return c.json({ message: "Transaction not found" }, 404);
+  }
+
+  return c.json(transaction);
+});
+
+transactionsRoutes.delete("/:id", async (c) => {
+  const id = c.req.param("id");
+  const result = await db.delete(transactions).where(eq(transactions.id, id)).returning();
+  const transaction = result[0];
+  if (!transaction) {
+    return c.json({ message: "Transaction not found" }, 404);
+  }
+  return c.json(transaction);
 });
 
 export default transactionsRoutes;
