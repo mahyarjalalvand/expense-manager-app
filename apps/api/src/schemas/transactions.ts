@@ -6,3 +6,4 @@ export const createTransactionSchema = z.object({
   category: z.string().min(1),
   type: z.enum(["income", "expense"]),
 });
+export const transactionIdSchema = z.uuid();

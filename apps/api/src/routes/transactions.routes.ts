@@ -3,7 +3,7 @@ import type { Transaction } from "../types/transaction.js";
 import { db } from "../db/index.js";
 import { transactions } from "../db/schema/transactions.js";
 import { eq } from "drizzle-orm";
-import { createTransactionSchema } from "../schemas/transactions.js";
+import { createTransactionSchema, transactionIdSchema } from "../schemas/transactions.js";
 
 const transactionsRoutes = new Hono();
 
@@ -14,7 +14,18 @@ transactionsRoutes.get("/", async (c) => {
 
 transactionsRoutes.get("/:id", async (c) => {
   const id = c.req.param("id");
-  const result = await db.select().from(transactions).where(eq(transactions.id, id));
+
+  const parsed = transactionIdSchema.safeParse(id);
+  if (!parsed.success) {
+    return c.json(
+      {
+        message: "Invalid transaction id",
+      },
+      400,
+    );
+  }
+
+  const result = await db.select().from(transactions).where(eq(transactions.id, parsed.data));
 
   const transaction = result[0];
   if (!transaction) {
