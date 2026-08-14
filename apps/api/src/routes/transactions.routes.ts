@@ -3,7 +3,7 @@ import type { Transaction } from "../types/transaction.js";
 
 import { eq } from "drizzle-orm";
 import { createTransactionSchema, transactionIdSchema, updateTransactionSchema } from "../schemas/transactions.js";
-import { getTransactionById, getTransactions } from "../services/transactions.service.js";
+import { createTransaction, deleteTransaction, getTransactionById, getTransactions, updateTransaction } from "../services/transactions.service.js";
 
 const transactionsRoutes = new Hono();
 
@@ -47,17 +47,8 @@ transactionsRoutes.post("/", async (c) => {
     );
   }
 
-  const result = await db
-    .insert(transactions)
-    .values({
-      title: parsed.data.title,
-      amount: parsed.data.amount,
-      category: parsed.data.category,
-      type: parsed.data.type,
-    })
-    .returning();
-
-  return c.json(result[0], 201);
+  const result = await createTransaction(parsed.data);
+  return c.json(result, 201);
 });
 
 transactionsRoutes.patch("/:id", async (c) => {
@@ -85,12 +76,7 @@ transactionsRoutes.patch("/:id", async (c) => {
     );
   }
 
-  const result = await db
-    .update(transactions)
-    .set({ ...parsedBody.data, updatedAt: new Date() })
-    .where(eq(transactions.id, parsedId.data))
-    .returning();
-  const transaction = result[0];
+  const transaction = await updateTransaction(parsedBody.data, parsedId.data);
   if (!transaction) {
     return c.json({ message: "Transaction not found" }, 404);
   }
@@ -110,8 +96,7 @@ transactionsRoutes.delete("/:id", async (c) => {
     );
   }
 
-  const result = await db.delete(transactions).where(eq(transactions.id, parsedId.data)).returning();
-  const transaction = result[0];
+  const transaction = await deleteTransaction(parsedId.data);
   if (!transaction) {
     return c.json({ message: "Transaction not found" }, 404);
   }
