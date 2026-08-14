@@ -1,7 +1,5 @@
 import { Hono } from "hono";
-import type { Transaction } from "../types/transaction.js";
 
-import { eq } from "drizzle-orm";
 import { createTransactionSchema, transactionIdSchema, updateTransactionSchema } from "../schemas/transactions.js";
 import { createTransaction, deleteTransaction, getTransactionById, getTransactions, updateTransaction } from "../services/transactions.service.js";
 
@@ -63,7 +61,7 @@ transactionsRoutes.patch("/:id", async (c) => {
       400,
     );
   }
-  const body = await c.req.json<Partial<Transaction>>();
+  const body = await c.req.json();
   const parsedBody = updateTransactionSchema.safeParse(body);
 
   if (!parsedBody.success) {
