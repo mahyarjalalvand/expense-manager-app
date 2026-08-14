@@ -7,3 +7,5 @@ export const createTransactionSchema = z.object({
   type: z.enum(["income", "expense"]),
 });
 export const transactionIdSchema = z.uuid();
+
+export const updateTransactionSchema = createTransactionSchema.partial();
