@@ -1,14 +1,14 @@
 import { Hono } from "hono";
 import type { Transaction } from "../types/transaction.js";
-import { db } from "../db/index.js";
-import { transactions } from "../db/schema/transactions.js";
+
 import { eq } from "drizzle-orm";
-import { createTransactionSchema, transactionIdSchema } from "../schemas/transactions.js";
+import { createTransactionSchema, transactionIdSchema, updateTransactionSchema } from "../schemas/transactions.js";
+import { getTransactionById, getTransactions } from "../services/transactions.service.js";
 
 const transactionsRoutes = new Hono();
 
 transactionsRoutes.get("/", async (c) => {
-  const result = await db.select().from(transactions);
+  const result = await getTransactions();
   return c.json(result);
 });
 
@@ -25,9 +25,7 @@ transactionsRoutes.get("/:id", async (c) => {
     );
   }
 
-  const result = await db.select().from(transactions).where(eq(transactions.id, parsed.data));
-
-  const transaction = result[0];
+  const transaction = await getTransactionById(parsed.data);
   if (!transaction) {
     return c.json({ message: "Transaction not found" }, 404);
   }
@@ -64,12 +62,33 @@ transactionsRoutes.post("/", async (c) => {
 
 transactionsRoutes.patch("/:id", async (c) => {
   const id = c.req.param("id");
+  const parsedId = transactionIdSchema.safeParse(id);
+
+  if (!parsedId.success) {
+    return c.json(
+      {
+        message: "Invalid Transaction id",
+      },
+      400,
+    );
+  }
   const body = await c.req.json<Partial<Transaction>>();
+  const parsedBody = updateTransactionSchema.safeParse(body);
+
+  if (!parsedBody.success) {
+    return c.json(
+      {
+        message: "Invalid transaction data",
+        errors: parsedBody.error.issues,
+      },
+      400,
+    );
+  }
 
   const result = await db
     .update(transactions)
-    .set({ ...body, updatedAt: new Date() })
-    .where(eq(transactions.id, id))
+    .set({ ...parsedBody.data, updatedAt: new Date() })
+    .where(eq(transactions.id, parsedId.data))
     .returning();
   const transaction = result[0];
   if (!transaction) {
@@ -81,7 +100,17 @@ transactionsRoutes.patch("/:id", async (c) => {
 
 transactionsRoutes.delete("/:id", async (c) => {
   const id = c.req.param("id");
-  const result = await db.delete(transactions).where(eq(transactions.id, id)).returning();
+  const parsedId = transactionIdSchema.safeParse(id);
+  if (!parsedId.success) {
+    return c.json(
+      {
+        message: "Invalid transaction id",
+      },
+      400,
+    );
+  }
+
+  const result = await db.delete(transactions).where(eq(transactions.id, parsedId.data)).returning();
   const transaction = result[0];
   if (!transaction) {
     return c.json({ message: "Transaction not found" }, 404);
