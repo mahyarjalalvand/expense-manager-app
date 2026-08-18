@@ -1,36 +1,7 @@
-import { routes, type AppRoute } from "@/routes/routes";
-import { LayoutDashboard, Receipt, Settings2Icon, Tags, type LucideIcon } from "lucide-react";
+import { navigation } from "@/routes/routes";
 import { NavLink } from "react-router-dom";
 
-type NavigationItem = {
-  title: string;
-  href: AppRoute;
-  icon: LucideIcon;
-};
-
 function Sidebar() {
-  const navigation: NavigationItem[] = [
-    {
-      title: "Dashboard",
-      href: routes.dashboard,
-      icon: LayoutDashboard,
-    },
-    {
-      title: "transactions",
-      href: routes.transactions,
-      icon: Receipt,
-    },
-    {
-      title: "categories",
-      href: routes.categories,
-      icon: Tags,
-    },
-    {
-      title: "setting",
-      href: routes.setting,
-      icon: Settings2Icon,
-    },
-  ];
   return (
     <aside className="flex flex-col border-r bg-background">
       <div className="flex py-5 items-center border-b px-6">
