@@ -1,8 +1,10 @@
-import type { Transactions } from "@/types/transactions.type";
+import type { CreateTransaction, Transactions } from "@/types/transactions.type";
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 export const getAllTransactions = async (): Promise<Transactions[]> => {
   try {
-    const res = await fetch("http://localhost:3000/api/transactions");
+    const res = await fetch(`${baseUrl}transactions`);
     if (!res.ok) {
       throw new Error(`failed to fetch transactions ${res.status}`);
     }
@@ -11,4 +13,18 @@ export const getAllTransactions = async (): Promise<Transactions[]> => {
     console.error("getAllTransactions failed:", error);
     throw error;
   }
+};
+
+export const createTransaction = async (data: CreateTransaction): Promise<Transactions> => {
+  const res = await fetch(`${baseUrl}transactions`, {
+    method: "POST",
+    headers: {
+      "content-type": "aplication/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    throw new Error(`failed to create transaction: ${res.status}`);
+  }
+  return await res.json();
 };
