@@ -9,6 +9,7 @@ import Setting from "./pages/Setting";
 import Transactions from "./pages/Transactions";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path={routes.setting} element={<Setting />} />
           <Route path={routes.transactions} element={<Transactions />} />
         </Routes>
+        <Toaster />
       </AppLayout>
     </QueryClientProvider>
   );
