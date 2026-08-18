@@ -117,6 +117,10 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+@utility center {
+  @apply flex items-center justify-center;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
