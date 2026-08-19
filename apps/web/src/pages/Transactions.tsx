@@ -1,5 +1,4 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCreateTransactions } from "@/hooks/useCreateTransactions";
 import { useTransactions } from "@/hooks/useTransactions";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
@@ -13,15 +12,6 @@ function Transactions() {
     }
   }, [isError, error]);
 
-  const createTransactions = useCreateTransactions();
-  const createHandler = () => {
-    createTransactions.mutate({
-      title: "ssdafas",
-      amount: 340000,
-      category: "housy",
-      type: "income",
-    });
-  };
   return (
     <section>
       <div className="bg-background overflow-hidden rounded-xl border">
