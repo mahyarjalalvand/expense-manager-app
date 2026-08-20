@@ -81,7 +81,7 @@ transactionsRoutes.patch("/:id", async (c) => {
 
   return c.json(transaction);
 });
-// todo fix delete route
+
 transactionsRoutes.delete("/", async (c) => {
   const id = await c.req.json();
   const parsedId = transactionIdSchema.safeParse(id);
