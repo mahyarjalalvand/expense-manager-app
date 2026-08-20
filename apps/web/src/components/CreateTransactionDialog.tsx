@@ -9,6 +9,7 @@ import { Input } from "./ui/input";
 import { useCreateTransactions } from "@/hooks/useCreateTransactions";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 type CreateTransactionProps = {
   open: boolean;
@@ -94,19 +95,24 @@ function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps)
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Type</FieldLabel>
-                {/* <select {...field} id={field.name} aria-invalid={fieldState.invalid} className="h-9 w-full rounded-md border bg-transparent px-3 text-sm">
-                  <option value="expense">Expense</option>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid}>
+                    <SelectValue placeholder="Select transactions type" />
+                  </SelectTrigger>
 
-                  <option value="income">Income</option>
-                </select> */}
+                  <SelectContent>
+                    <SelectItem value="expense">Expense</SelectItem>
+                    <SelectItem value="income">Income</SelectItem>
+                  </SelectContent>
+                </Select>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
 
           <div className="flex justify-end gap-2">
-            <Button variant="destructive" onClick={() => onOpenChange(false)}>
-              Cancle
+            <Button type="button" variant="destructive" onClick={() => onOpenChange(false)}>
+              Cancel
             </Button>
 
             <Button type="submit" disabled={createTransaction.isPending}>
