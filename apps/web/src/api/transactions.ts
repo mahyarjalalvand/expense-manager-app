@@ -30,7 +30,6 @@ export const createTransaction = async (data: CreateTransaction): Promise<Transa
 };
 
 export const deleteTransaction = async (id: string) => {
-  console.log(id);
   const res = await fetch(`${baseUrl}transactions`, {
     method: "DELETE",
     headers: {
