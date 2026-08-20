@@ -28,3 +28,18 @@ export const createTransaction = async (data: CreateTransaction): Promise<Transa
   }
   return await res.json();
 };
+
+export const deleteTransaction = async (id: string) => {
+  console.log(id);
+  const res = await fetch(`${baseUrl}transactions`, {
+    method: "DELETE",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(id),
+  });
+  if (!res.ok) {
+    throw new Error(`failed to delete transaction: ${res.status}`);
+  }
+  return res.json();
+};
