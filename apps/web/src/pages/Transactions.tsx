@@ -1,6 +1,7 @@
 import CreateTransactionDialog from "@/components/CreateTransactionDialog";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import TransactionsTable from "@/components/ui/TransactionsTable";
+
 import { useTransactions } from "@/hooks/useTransactions";
 import { Loader2, PlusCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -26,29 +27,10 @@ function Transactions() {
           <div className="center h-60">
             <Loader2 className="animate-spin text-muted-foreground" />
           </div>
+        ) : transactions ? (
+          <TransactionsTable transactions={transactions} />
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {transactions?.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.category}</TableCell>
-                  <TableCell>{item.type}</TableCell>
-                  <TableCell>{item.amount}</TableCell>
-                  <TableCell>{item.createdAt}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          "Data not found!"
         )}
       </div>
       <CreateTransactionDialog open={open} onOpenChange={setOpen} />
