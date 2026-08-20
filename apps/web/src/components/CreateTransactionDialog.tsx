@@ -1,9 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { createTransactionSchema, type CreateTransactionForm } from "@/schemas/transaction.schema";
+import { Field, FieldError, FieldLabel } from "./ui/field";
+import { Input } from "./ui/input";
+import { useCreateTransactions } from "@/hooks/useCreateTransactions";
+import { toast } from "sonner";
 
 type CreateTransactionProps = {
   open: boolean;
@@ -11,6 +15,7 @@ type CreateTransactionProps = {
 };
 
 function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps) {
+  const createTransaction = useCreateTransactions();
   const form = useForm<CreateTransactionForm>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: {
@@ -21,7 +26,17 @@ function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps)
     },
   });
   const onSubmit = (data: CreateTransactionForm) => {
-    console.log(data);
+    createTransaction.mutate(data, {
+      onSuccess: () => {
+        toast.success("Transaction created successfully");
+        onOpenChange(false);
+        form.reset();
+      },
+
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
   };
 
   return (
@@ -31,7 +46,71 @@ function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps)
           <DialogTitle>Add transaction</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <button type="submit">Create</button>
+          <Controller
+            name="title"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Title</FieldLabel>
+                <Input {...field} id={field.name} placeholder="e.g. Grocery shopping" aria-invalid={fieldState.invalid} />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+          <Controller
+            name="amount"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Amount</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  type="number"
+                  placeholder="e.g. 500000"
+                  aria-invalid={fieldState.invalid}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+          <Controller
+            name="category"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+                <Input {...field} id={field.name} placeholder="e.g. food" aria-invalid={fieldState.invalid} />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+          <Controller
+            name="type"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Type</FieldLabel>
+                <select {...field} id={field.name} aria-invalid={fieldState.invalid} className="h-9 w-full rounded-md border bg-transparent px-3 text-sm">
+                  <option value="expense">Expense</option>
+
+                  <option value="income">Income</option>
+                </select>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={() => onOpenChange(false)}>
+              Cancle
+            </button>
+            <button type="submit" disabled={createTransaction.isPending}>
+              {createTransaction.isPending ? "Creating ..." : "Create"}
+            </button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
