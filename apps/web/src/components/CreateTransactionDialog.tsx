@@ -8,6 +8,7 @@ import { Field, FieldError, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
 import { useCreateTransactions } from "@/hooks/useCreateTransactions";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 type CreateTransactionProps = {
   open: boolean;
@@ -93,23 +94,24 @@ function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps)
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Type</FieldLabel>
-                <select {...field} id={field.name} aria-invalid={fieldState.invalid} className="h-9 w-full rounded-md border bg-transparent px-3 text-sm">
+                {/* <select {...field} id={field.name} aria-invalid={fieldState.invalid} className="h-9 w-full rounded-md border bg-transparent px-3 text-sm">
                   <option value="expense">Expense</option>
 
                   <option value="income">Income</option>
-                </select>
+                </select> */}
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
 
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={() => onOpenChange(false)}>
+            <Button variant="destructive" onClick={() => onOpenChange(false)}>
               Cancle
-            </button>
-            <button type="submit" disabled={createTransaction.isPending}>
+            </Button>
+
+            <Button type="submit" disabled={createTransaction.isPending}>
               {createTransaction.isPending ? "Creating ..." : "Create"}
-            </button>
+            </Button>
           </div>
         </form>
       </DialogContent>
