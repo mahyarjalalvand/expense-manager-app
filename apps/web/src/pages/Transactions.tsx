@@ -1,10 +1,13 @@
+import CreateTransactionDialog from "@/components/CreateTransactionDialog";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useTransactions } from "@/hooks/useTransactions";
-import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { Loader2, PlusCircleIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 function Transactions() {
+  const [open, setOpen] = useState(false);
   const { data: transactions, isError, isLoading, error } = useTransactions();
   useEffect(() => {
     if (isError) {
@@ -14,6 +17,10 @@ function Transactions() {
 
   return (
     <section>
+      <Button variant={"outline"} onClick={() => setOpen(true)} className="mb-4 flex items-center gap-2">
+        Add Transaction
+        <PlusCircleIcon />
+      </Button>
       <div className="bg-background overflow-hidden rounded-xl border">
         {isLoading ? (
           <div className="center h-60">
@@ -44,6 +51,7 @@ function Transactions() {
           </Table>
         )}
       </div>
+      <CreateTransactionDialog open={open} onOpenChange={setOpen} />
     </section>
   );
 }
