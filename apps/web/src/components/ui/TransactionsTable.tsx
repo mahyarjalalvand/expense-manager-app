@@ -51,7 +51,7 @@ function TransactionsTable({ transactions }: { transactions: Transactions[] }) {
               <TableCell>{item.category}</TableCell>
               <TableCell>{item.type}</TableCell>
               <TableCell>{item.amount}</TableCell>
-              <TableCell>{item.createdAt}</TableCell>
+              <TableCell>{new Date(item.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })}</TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger render={<Button variant="ghost" />}>
@@ -79,7 +79,7 @@ function TransactionsTable({ transactions }: { transactions: Transactions[] }) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
-            <AlertDialogDescription>{`Are you sure you want to delete ${transactionToDelete?.title}`}</AlertDialogDescription>
+            <AlertDialogDescription>{`Are you sure you want to delete '${transactionToDelete?.title}'`}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
