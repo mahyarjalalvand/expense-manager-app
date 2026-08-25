@@ -8,3 +8,5 @@ export interface Transactions {
   updatedAt: string;
 }
 export type CreateTransaction = Omit<Transactions, "id" | "createdAt" | "updatedAt">;
+
+export type TransactionsFilterState = "all" | "income" | "expense";
