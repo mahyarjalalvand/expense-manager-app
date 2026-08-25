@@ -47,7 +47,7 @@ function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps)
         <DialogHeader>
           <DialogTitle>Add transaction</DialogTitle>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <Controller
             name="title"
             control={form.control}
