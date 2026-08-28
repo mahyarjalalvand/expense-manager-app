@@ -1,4 +1,4 @@
-import type { Transactions } from "@/types/transactions.type";
+import type { Transactions } from "@/types/transactions";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
 import { Button } from "./button";

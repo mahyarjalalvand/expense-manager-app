@@ -4,7 +4,7 @@ import TransactionsFilter from "@/components/ui/TransactionsFilter";
 import TransactionsTable from "@/components/ui/TransactionsTable";
 
 import { useTransactions } from "@/hooks/useTransactions";
-import type { TransactionsFilterState } from "@/types/transactions.type";
+import type { TransactionsFilterState } from "@/types/transactions";
 import { Loader2, PlusCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
