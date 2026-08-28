@@ -8,14 +8,32 @@ type InconeExpenseChartProps = {
   }[];
 };
 
+const formatAmount = (value: number) => {
+  return value.toLocaleString("en-US");
+};
+
 function IncomeExpenseChart({ data }: InconeExpenseChartProps) {
   return (
     <ResponsiveContainer width="100%" height={350} minWidth={0}>
       <LineChart data={data}>
         <CartesianGrid />
-        <XAxis dataKey="date" />
+        <XAxis
+          dataKey="date"
+          tickFormatter={(date) => {
+            return new Date(date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+          }}
+        />
         <YAxis />
-        <Tooltip />
+        <Tooltip
+          formatter={(value, name) => [formatAmount(Number(value)), name === "income" ? "Income" : "Expense"]}
+          allowEscapeViewBox={{
+            x: false,
+            y: false,
+          }}
+        />
         <Legend />
         <Line type="monotone" dataKey="income" />
         <Line type="monotone" dataKey="expense" />
