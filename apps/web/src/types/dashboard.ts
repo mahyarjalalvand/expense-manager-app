@@ -9,7 +9,7 @@ export interface DashboardData {
   dailyData: {
     date: string;
     income: number;
-    expenses: string;
+    expenses: number;
   }[];
   recentTransactions: Transactions[];
 }
