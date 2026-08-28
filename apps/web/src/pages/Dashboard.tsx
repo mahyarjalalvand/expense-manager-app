@@ -1,3 +1,4 @@
+import IncomeExpenseChart from "@/components/ui/IncomeExpenseChart";
 import SummaryCard from "@/components/ui/SummaryCard";
 import { useDashboard } from "@/hooks/useDashboard";
 
@@ -17,6 +18,9 @@ function Dashboard() {
         <SummaryCard title="Income" value={data?.summary.income} />
         <SummaryCard title="Expense" value={data?.summary.expenses} />
         <SummaryCard title="Balance" value={data?.summary.balance} />
+      </div>
+      <div className="mt-6 w-full min-w-0 overflow-hidden">
+        <IncomeExpenseChart data={data.dailyData} />
       </div>
     </div>
   );
