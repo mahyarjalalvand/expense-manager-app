@@ -3,13 +3,13 @@ import type { Transactions } from "./transactions";
 export interface DashboardData {
   summary: {
     income: number;
-    expense: number;
+    expenses: number;
     balance: number;
   };
   dailyData: {
     date: string;
     income: number;
-    expense: string;
+    expenses: string;
   }[];
   recentTransactions: Transactions[];
 }
