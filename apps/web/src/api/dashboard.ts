@@ -8,6 +8,5 @@ export const getDashboard = async (): Promise<DashboardData> => {
     throw new Error("Failed to fetch dashboard data");
   }
   const data = await res.json();
-  console.log(data);
   return data;
 };
