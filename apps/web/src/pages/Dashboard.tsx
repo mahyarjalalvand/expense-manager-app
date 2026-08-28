@@ -1,4 +1,5 @@
 import IncomeExpenseChart from "@/components/ui/IncomeExpenseChart";
+import RecentTransactions from "@/components/ui/RecentTransactions";
 import SummaryCard from "@/components/ui/SummaryCard";
 import { useDashboard } from "@/hooks/useDashboard";
 
@@ -21,6 +22,9 @@ function Dashboard() {
       </div>
       <div className="mt-6 w-full min-w-0 overflow-hidden">
         <IncomeExpenseChart data={data.dailyData} />
+      </div>
+      <div>
+        <RecentTransactions data={data.recentTransactions} />
       </div>
     </div>
   );
