@@ -7,7 +7,7 @@ function Sidebar() {
       <div className="flex py-5 items-center border-b px-6">
         <h1>expense manager</h1>
       </div>
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 space-y-2 p-4">
         {navigation.map((item) => {
           const Icon = item.icon;
           return (
