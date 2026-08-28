@@ -1,4 +1,4 @@
-import type { CreateTransaction, Transactions } from "@/types/transactions.type";
+import type { CreateTransaction, Transactions } from "@/types/transactions";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
