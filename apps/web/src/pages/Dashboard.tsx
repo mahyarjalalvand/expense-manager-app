@@ -16,9 +16,9 @@ function Dashboard() {
     <div>
       <p className="text-muted-foreground">overview of your financial activity</p>
       <div className="w-full grid gap-4 md:grid-cols-3 mt-5">
-        <SummaryCard title="Income" value={data?.summary.income} />
-        <SummaryCard title="Expense" value={data?.summary.expenses} />
-        <SummaryCard title="Balance" value={data?.summary.balance} />
+        <SummaryCard title="Income" value={data?.summary.income} description="Total income this month" />
+        <SummaryCard title="Expense" value={data?.summary.expenses} description="Total expenses this month" />
+        <SummaryCard title="Balance" value={data?.summary.balance} description="Remaining balance this month" />
       </div>
       <div className="mt-6 w-full min-w-0 overflow-hidden">
         <IncomeExpenseChart data={data.dailyData} />
