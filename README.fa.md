@@ -39,14 +39,14 @@
 
 ## فناوری‌ها
 
-| بخش | ابزارها |
-| --- | --- |
-| وب | React 19، TypeScript، Vite، Tailwind CSS، React Router |
-| داده در کلاینت | TanStack Query، React Hook Form، Zod، Recharts |
-| API | Node.js، Hono، TypeScript، Zod |
-| پایگاه‌داده | PostgreSQL 17، Drizzle ORM، Drizzle Kit |
-| زیرساخت محلی | Docker Compose |
-| ساختار مخزن | npm workspaces |
+| بخش            | ابزارها                                                |
+| -------------- | ------------------------------------------------------ |
+| وب             | React 19، TypeScript، Vite، Tailwind CSS، React Router |
+| داده در کلاینت | TanStack Query، React Hook Form، Zod، Recharts         |
+| API            | Node.js، Hono، TypeScript، Zod                         |
+| پایگاه‌داده    | PostgreSQL 17، Drizzle ORM، Drizzle Kit                |
+| زیرساخت محلی   | Docker Compose                                         |
+| ساختار مخزن    | npm workspaces                                         |
 
 ## پیش‌نیازها
 
@@ -129,10 +129,10 @@ docker compose down
 
 ## پیکربندی
 
-| فایل | متغیر | الزامی | توضیح |
-| --- | --- | --- | --- |
-| `apps/api/.env` | `DATABASE_URL` | بله | رشتهٔ اتصال PostgreSQL که API و Drizzle Kit از آن استفاده می‌کنند. |
-| `apps/web/.env` | `VITE_BASE_URL` | بله | آدرس پایهٔ API که در مرورگر قابل مشاهده است. باید با `/` پایان یابد؛ مانند `http://localhost:3000/api/`. |
+| فایل            | متغیر           | الزامی | توضیح                                                                                                    |
+| --------------- | --------------- | ------ | -------------------------------------------------------------------------------------------------------- |
+| `apps/api/.env` | `DATABASE_URL`  | بله    | رشتهٔ اتصال PostgreSQL که API و Drizzle Kit از آن استفاده می‌کنند.                                       |
+| `apps/web/.env` | `VITE_BASE_URL` | بله    | آدرس پایهٔ API که در مرورگر قابل مشاهده است. باید با `/` پایان یابد؛ مانند `http://localhost:3000/api/`. |
 
 مقادیر `VITE_*` در خروجی کلاینت قرار می‌گیرند؛ هرگز گذرواژه، کلید API یا دادهٔ محرمانه را در آن‌ها نگذارید. فایل‌های `.env` در `.gitignore` قرار دارند و `apps/api/.env.example` الگوی پیکربندی API است.
 
@@ -140,31 +140,31 @@ API اکنون فقط درخواست‌های cross-origin از `http://localhos
 
 ## دستورهای موجود
 
-| دستور | کاربرد |
-| --- | --- |
-| `npm run dev:api` | اجرای API با مشاهدهٔ تغییر فایل‌ها روی پورت 3000. |
-| `npm run dev:web` | اجرای سرور توسعهٔ Vite. |
-| `npm run build -w api` | بررسی TypeScript و ساخت API در `apps/api/dist`. |
-| `npm run start -w api` | اجرای API کامپایل‌شده؛ ابتدا آن را build کنید. |
-| `npm run build -w web` | بررسی TypeScript و ساخت خروجی production وب. |
-| `npm run preview -w web` | پیش‌نمایش محلی خروجی production وب. |
-| `npm run lint -w web` | اجرای تنظیمات ESLint کلاینت وب. |
-| `npm run db:generate -w api` | ایجاد migration در Drizzle پس از تغییر schema. |
-| `npm run db:migrate -w api` | اعمال migrationهای در انتظار Drizzle. |
+| دستور                        | کاربرد                                            |
+| ---------------------------- | ------------------------------------------------- |
+| `npm run dev:api`            | اجرای API با مشاهدهٔ تغییر فایل‌ها روی پورت 3000. |
+| `npm run dev:web`            | اجرای سرور توسعهٔ Vite.                           |
+| `npm run build -w api`       | بررسی TypeScript و ساخت API در `apps/api/dist`.   |
+| `npm run start -w api`       | اجرای API کامپایل‌شده؛ ابتدا آن را build کنید.    |
+| `npm run build -w web`       | بررسی TypeScript و ساخت خروجی production وب.      |
+| `npm run preview -w web`     | پیش‌نمایش محلی خروجی production وب.               |
+| `npm run lint -w web`        | اجرای تنظیمات ESLint کلاینت وب.                   |
+| `npm run db:generate -w api` | ایجاد migration در Drizzle پس از تغییر schema.    |
+| `npm run db:migrate -w api`  | اعمال migrationهای در انتظار Drizzle.             |
 
 ## مرجع API
 
 آدرس پایه: `http://localhost:3000/api`
 
-| متد | مسیر | توضیح | پاسخ موفق |
-| --- | --- | --- | --- |
-| `GET` | `/health` | بررسی در دسترس‌بودن API. | `200` |
-| `GET` | `/dashboard` | خلاصهٔ ماه جاری، دادهٔ روزانهٔ درآمد/هزینه و پنج تراکنش آخر را برمی‌گرداند. | `200` |
-| `GET` | `/transactions` | همهٔ تراکنش‌ها را برمی‌گرداند. | `200` |
-| `GET` | `/transactions/:id` | یک تراکنش را با UUID برمی‌گرداند. | `200` |
-| `POST` | `/transactions` | یک تراکنش می‌سازد. | `201` |
-| `PATCH` | `/transactions/:id` | یک یا چند فیلد تراکنش را به‌روزرسانی می‌کند. | `200` |
-| `DELETE` | `/transactions` | یک تراکنش را حذف می‌کند؛ UUID باید به‌شکل رشتهٔ JSON در body ارسال شود. | `200` |
+| متد      | مسیر                | توضیح                                                                       | پاسخ موفق |
+| -------- | ------------------- | --------------------------------------------------------------------------- | --------- |
+| `GET`    | `/health`           | بررسی در دسترس‌بودن API.                                                    | `200`     |
+| `GET`    | `/dashboard`        | خلاصهٔ ماه جاری، دادهٔ روزانهٔ درآمد/هزینه و پنج تراکنش آخر را برمی‌گرداند. | `200`     |
+| `GET`    | `/transactions`     | همهٔ تراکنش‌ها را برمی‌گرداند.                                              | `200`     |
+| `GET`    | `/transactions/:id` | یک تراکنش را با UUID برمی‌گرداند.                                           | `200`     |
+| `POST`   | `/transactions`     | یک تراکنش می‌سازد.                                                          | `201`     |
+| `PATCH`  | `/transactions/:id` | یک یا چند فیلد تراکنش را به‌روزرسانی می‌کند.                                | `200`     |
+| `DELETE` | `/transactions`     | یک تراکنش را حذف می‌کند؛ UUID باید به‌شکل رشتهٔ JSON در body ارسال شود.     | `200`     |
 
 ### بدنهٔ تراکنش
 
@@ -211,15 +211,15 @@ curl --request DELETE http://localhost:3000/api/transactions \
 
 جدول `transactions` شامل فیلدهای زیر است:
 
-| ستون | نوع | توضیح |
-| --- | --- | --- |
-| `id` | UUID | کلید اصلی که PostgreSQL تولید می‌کند. |
-| `title` | `varchar(255)` | شرح تراکنش. |
-| `amount` | integer | مبلغ در کوچک‌ترین واحد پولی انتخاب‌شده در برنامه. |
-| `category` | `varchar(150)` | دسته‌بندی متنی آزاد. |
-| `type` | `varchar(40)` | `income` یا `expense`. |
-| `created_at` | timestamp | هنگام ایجاد رکورد تنظیم می‌شود. |
-| `updated_at` | timestamp | هنگام تغییر رکورد به‌روزرسانی می‌شود. |
+| ستون         | نوع            | توضیح                                             |
+| ------------ | -------------- | ------------------------------------------------- |
+| `id`         | UUID           | کلید اصلی که PostgreSQL تولید می‌کند.             |
+| `title`      | `varchar(255)` | شرح تراکنش.                                       |
+| `amount`     | integer        | مبلغ در کوچک‌ترین واحد پولی انتخاب‌شده در برنامه. |
+| `category`   | `varchar(150)` | دسته‌بندی متنی آزاد.                              |
+| `type`       | `varchar(40)`  | `income` یا `expense`.                            |
+| `created_at` | timestamp      | هنگام ایجاد رکورد تنظیم می‌شود.                   |
+| `updated_at` | timestamp      | هنگام تغییر رکورد به‌روزرسانی می‌شود.             |
 
 هنگام تغییر schema:
 
@@ -260,12 +260,3 @@ curl --request DELETE http://localhost:3000/api/transactions \
 - CORS را به مبدأهای شناخته‌شده محدود نگه دارید و مقادیر مخصوص هر محیط را بیرون از کنترل نسخه پیکربندی کنید.
 - تا جای ممکن API و پایگاه‌داده را در شبکهٔ خصوصی ارائه کنید و پورت PostgreSQL را فقط در صورت نیاز منتشر کنید.
 - migrationها بخشی از فرآیند deploy هستند. پیش از استفاده در production از پایگاه‌داده پشتیبان بگیرید و migration را روی نمونه‌ای مشابه دادهٔ واقعی آزمایش کنید.
-
-## مشارکت
-
-1. یک branch متمرکز از شاخهٔ اصلی فعلی بسازید.
-2. در صورت نیاز، تغییرات پیاده‌سازی، schema و migration را در یک مجموعه تغییر نگه دارید.
-3. پیش از بازکردن pull request، دستورهای build و lint مرتبط را اجرا کنید.
-4. تغییرات قابل مشاهده برای کاربر، تغییرات پیکربندی، و ملاحظات migration یا بازگشت را در pull request توضیح دهید.
-
-در این مخزن هنوز فایل مجوز (license) وجود ندارد. پیش از بازنشر یا استفاده از کد خارج از محدودهٔ پروژه، تأیید نگه‌دارندهٔ پروژه را دریافت کنید.

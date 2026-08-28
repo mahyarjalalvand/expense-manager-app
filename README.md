@@ -261,11 +261,3 @@ Do not edit a migration that has already been applied in a shared environment. C
 - Serve the API and database over private networks where possible; do not publish PostgreSQL's port unless it is required.
 - Treat database migrations as deployment steps. Back up the database and test migrations against a representative copy before production use.
 
-## Contributing
-
-1. Create a focused branch from the current main branch.
-2. Keep implementation, schema, and migration changes together when applicable.
-3. Run the relevant build and lint commands before opening a pull request.
-4. Describe user-visible changes, configuration changes, and any migration or rollback considerations in the pull request.
-
-There is no license file in this repository yet. Obtain the maintainer's approval before redistributing or using the code outside the intended project context.
