@@ -3,7 +3,7 @@ import { LayoutDashboard, Receipt, Settings2Icon, Tags, type LucideIcon } from "
 export const routes = {
   dashboard: "/",
   categories: "/categories",
-  setting: "/setting",
+  settings: "/settings",
   transactions: "/transactions",
 };
 
@@ -26,8 +26,8 @@ export const navigation: NavigationItem[] = [
     icon: Tags,
   },
   {
-    title: "setting",
-    href: routes.setting,
+    title: "settings",
+    href: routes.settings,
     icon: Settings2Icon,
   },
 ];
