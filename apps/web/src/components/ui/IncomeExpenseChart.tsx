@@ -1,7 +1,7 @@
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardHeader, CardTitle } from "./card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./select";
-import { dateRanges } from "@/constant/dateRangeFilter";
+import { dateRanges, type DateRange } from "@/constant/dateRangeFilter";
 
 type InconeExpenseChartProps = {
   data: {
@@ -9,18 +9,20 @@ type InconeExpenseChartProps = {
     income: number;
     expenses: number;
   }[];
+  dateRange: DateRange;
+  onDateRangeChange: (value: DateRange) => void;
 };
 
 const formatAmount = (value: number) => {
   return value.toLocaleString("en-US");
 };
 
-function IncomeExpenseChart({ data }: InconeExpenseChartProps) {
+function IncomeExpenseChart({ data, dateRange, onDateRangeChange }: InconeExpenseChartProps) {
   return (
     <Card>
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Income & Expenses</CardTitle>
-        <Select items={dateRanges}>
+        <Select value={dateRange} onValueChange={onDateRangeChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
