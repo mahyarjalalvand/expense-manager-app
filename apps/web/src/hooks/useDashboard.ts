@@ -1,9 +1,10 @@
 import { getDashboard } from "@/api/dashboard";
+import type { DateRange } from "@/constant/dateRangeFilter";
 import { useQuery } from "@tanstack/react-query";
 
-export const useDashboard = () => {
+export const useDashboard = (dateRange: DateRange) => {
   return useQuery({
-    queryKey: ["dashboard"],
-    queryFn: getDashboard,
+    queryKey: ["dashboard", dateRange],
+    queryFn: () => getDashboard(dateRange),
   });
 };
