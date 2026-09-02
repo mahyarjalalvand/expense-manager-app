@@ -1,11 +1,20 @@
+import { useState } from "react";
+
+import { useDashboard } from "@/hooks/useDashboard";
+
 import IncomeExpenseChart from "@/components/ui/IncomeExpenseChart";
 import RecentTransactions from "@/components/ui/RecentTransactions";
 import SummaryCard from "@/components/ui/SummaryCard";
-import { useDashboard } from "@/hooks/useDashboard";
+
+import type { DateRange } from "@/constant/dateRangeFilter";
+
 import { ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
 
 function Dashboard() {
   const { data, isPending, isError } = useDashboard();
+
+  const [dateRange, setDateRange] = useState<DateRange>("30d");
+
   if (isPending) {
     return <div>Loading...</div>;
   }
@@ -22,7 +31,7 @@ function Dashboard() {
         <SummaryCard title="Balance" variant="balance" icon={Wallet} value={data?.summary.balance} description="Remaining balance this month" />
       </div>
       <div className="my-6 w-full min-w-0 overflow-hidden">
-        <IncomeExpenseChart data={data.dailyData} />
+        <IncomeExpenseChart data={data.dailyData} dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>
       <div>
         <RecentTransactions data={data.recentTransactions} />
