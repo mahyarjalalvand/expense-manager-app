@@ -21,7 +21,7 @@ function Dashboard() {
         <SummaryCard title="Expense" variant="expense" icon={ArrowUpRight} value={data?.summary.expenses} description="Total expenses this month" />
         <SummaryCard title="Balance" variant="balance" icon={Wallet} value={data?.summary.balance} description="Remaining balance this month" />
       </div>
-      <div className="mt-6 w-full min-w-0 overflow-hidden">
+      <div className="my-6 w-full min-w-0 overflow-hidden">
         <IncomeExpenseChart data={data.dailyData} />
       </div>
       <div>
