@@ -11,9 +11,9 @@ import type { DateRange } from "@/constant/dateRangeFilter";
 import { ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
 
 function Dashboard() {
-  const { data, isPending, isError } = useDashboard();
-
   const [dateRange, setDateRange] = useState<DateRange>("30d");
+
+  const { data, isPending, isError } = useDashboard(dateRange);
 
   if (isPending) {
     return <div>Loading...</div>;
