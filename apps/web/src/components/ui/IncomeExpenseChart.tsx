@@ -32,7 +32,7 @@ function IncomeExpenseChart({ data }: InconeExpenseChartProps) {
               });
             }}
           />
-          <YAxis />
+          <YAxis width="auto" />
           <Tooltip
             formatter={(value, name) => [formatAmount(Number(value)), name === "income" ? "Income" : "Expense"]}
             allowEscapeViewBox={{
