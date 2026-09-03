@@ -22,7 +22,13 @@ function IncomeExpenseChart({ data, dateRange, onDateRangeChange }: InconeExpens
     <Card>
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Income & Expenses</CardTitle>
-        <Select value={dateRange} onValueChange={onDateRangeChange}>
+        <Select
+          value={dateRange}
+          onValueChange={(value) => {
+            if (value) {
+              onDateRangeChange(value);
+            }
+          }}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
