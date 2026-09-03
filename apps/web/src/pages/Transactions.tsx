@@ -15,6 +15,8 @@ function Transactions() {
 
   const { data: transactions, isError, isLoading, error } = useTransactions();
 
+  const filtredTransactions = (transactions ?? []).filter((item) => transactionFilter === "all" || item.type === transactionFilter);
+
   useEffect(() => {
     if (isError) {
       toast.error(error.message);
@@ -36,7 +38,7 @@ function Transactions() {
             <Loader2 className="animate-spin text-muted-foreground" />
           </div>
         ) : transactions ? (
-          <TransactionsTable transactions={transactions} />
+          <TransactionsTable transactions={filtredTransactions} />
         ) : (
           "Data not found!"
         )}
