@@ -13,7 +13,7 @@ export const getDateRange = (range: DateRange) => {
     }
     case "30d": {
       const startDate = new Date(now);
-      startDate.setDate(now.getMonth() - 30);
+      startDate.setDate(now.getDate() - 30);
       return {
         startDate,
         endDate: now,
