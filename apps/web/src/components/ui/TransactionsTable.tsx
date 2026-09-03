@@ -45,28 +45,36 @@ function TransactionsTable({ transactions }: { transactions: Transactions[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions?.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.title}</TableCell>
-              <TableCell>{item.category}</TableCell>
-              <TableCell>{item.type}</TableCell>
-              <TableCell>{item.amount}</TableCell>
-              <TableCell>{new Date(item.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger render={<Button variant="ghost" />}>
-                    <MoreHorizontal />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem variant="destructive" onClick={() => setTransactionToDelete(item)}>
-                      <Trash />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          {transactions.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="h32 text-center text-muted-foreground">
+                No transactions found
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            transactions?.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.title}</TableCell>
+                <TableCell>{item.category}</TableCell>
+                <TableCell>{item.type}</TableCell>
+                <TableCell>{item.amount}</TableCell>
+                <TableCell>{new Date(item.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={<Button variant="ghost" />}>
+                      <MoreHorizontal />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem variant="destructive" onClick={() => setTransactionToDelete(item)}>
+                        <Trash />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
       <AlertDialog
