@@ -2,13 +2,11 @@ import { and, desc, gte, lt, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { transactions } from "../db/schema/transactions.js";
 import { formatDateKey } from "../utils/formatDate.js";
+import type { DateRange } from "../schemas/dateRange.js";
+import { getDateRange } from "../utils/getDateRange.js";
 
-export const getDashboard = async () => {
-  const now = new Date();
-
-  const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-
+export const getDashboard = async (range: DateRange) => {
+  const { startDate, endDate } = getDateRange(range);
   const result = await db
     .select({
       income: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'income' THEN ${transactions.amount} ELSE 0 END),0)`,
