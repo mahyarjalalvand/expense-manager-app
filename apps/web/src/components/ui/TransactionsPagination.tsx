@@ -8,7 +8,6 @@ interface TransactionsPaginationType {
 }
 
 function TransactionsPagination({ page, totalPages, setPage }: TransactionsPaginationType) {
-  console.log({ page, totalPages, setPage });
   if (totalPages <= 1) return null;
   return (
     <Pagination>
