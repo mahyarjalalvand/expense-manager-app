@@ -16,6 +16,7 @@ function Transactions() {
   const { data: transactions, isError, isLoading, error } = useTransactions();
 
   const filtredTransactions = (transactions ?? []).filter((item) => transactionFilter === "all" || item.type === transactionFilter);
+  const emptyMessage = transactionFilter === "all" ? "No transactions found" : `No ${transactionFilter} found`;
 
   useEffect(() => {
     if (isError) {
@@ -37,10 +38,8 @@ function Transactions() {
           <div className="center h-60">
             <Loader2 className="animate-spin text-muted-foreground" />
           </div>
-        ) : transactions ? (
-          <TransactionsTable transactions={filtredTransactions} />
         ) : (
-          "Data not found!"
+          transactions && <TransactionsTable transactions={filtredTransactions} emptyMessage={emptyMessage} />
         )}
       </div>
       <CreateTransactionDialog open={open} onOpenChange={setOpen} />

@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./alert-dialog";
-function TransactionsTable({ transactions }: { transactions: Transactions[] }) {
+function TransactionsTable({ transactions, emptyMessage }: { transactions: Transactions[]; emptyMessage: string }) {
   const [transactionToDelete, setTransactionToDelete] = useState<Transactions | null>(null);
 
   const deleteTransaction = useDeleteTransaction();
@@ -48,7 +48,7 @@ function TransactionsTable({ transactions }: { transactions: Transactions[] }) {
           {transactions.length === 0 ? (
             <TableRow>
               <TableCell colSpan={6} className="h32 text-center text-muted-foreground">
-                No transactions found
+                {emptyMessage}
               </TableCell>
             </TableRow>
           ) : (
