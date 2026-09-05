@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 
 export const transactionsQueryKey = ["transactions"];
 
-export const useTransactions = () => {
+export const useTransactions = (page: number, limit: number) => {
   return useQuery({
-    queryKey: transactionsQueryKey,
-    queryFn: getAllTransactions,
+    queryKey: [transactionsQueryKey, page, limit],
+    queryFn: () => getAllTransactions(page, limit),
   });
 };
