@@ -6,7 +6,17 @@ import { createTransaction, deleteTransaction, getTransactionById, getTransactio
 const transactionsRoutes = new Hono();
 
 transactionsRoutes.get("/", async (c) => {
-  const result = await getTransactions();
+  const page = Number(c.req.query("page") ?? "1");
+  const limit = Number(c.req.query("limit") ?? "10");
+
+  if (!Number.isInteger(page) || page < 1) {
+    return c.json({ message: "invalid page" }, 400);
+  }
+  if (!Number.isInteger(limit) || limit < 1) {
+    return c.json({ message: "invalid limit" }, 400);
+  }
+
+  const result = await getTransactions(page, limit);
   return c.json(result);
 });
 
