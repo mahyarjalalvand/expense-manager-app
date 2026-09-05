@@ -1,4 +1,4 @@
-import type { Transactions } from "@/types/transactions";
+import type { Transaction } from "@/types/transactions";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
 import { Button } from "./button";
@@ -16,8 +16,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./alert-dialog";
-function TransactionsTable({ transactions, emptyMessage }: { transactions: Transactions[]; emptyMessage: string }) {
-  const [transactionToDelete, setTransactionToDelete] = useState<Transactions | null>(null);
+function TransactionsTable({ transactions, emptyMessage }: { transactions: Transaction[]; emptyMessage: string }) {
+  const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
 
   const deleteTransaction = useDeleteTransaction();
 
