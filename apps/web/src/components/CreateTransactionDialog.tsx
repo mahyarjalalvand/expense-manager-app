@@ -69,10 +69,11 @@ function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps)
                   {...field}
                   id={field.name}
                   type="number"
-                  placeholder="e.g. 500000"
+                  placeholder="500000"
                   aria-invalid={fieldState.invalid}
                   value={field.value}
                   onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  className="no-scrollbar"
                 />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
