@@ -1,11 +1,3 @@
-import type { Transaction } from "@/types/transactions";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
-import { Button } from "./button";
-import { MoreHorizontal, Trash } from "lucide-react";
-import { useDeleteTransaction } from "@/hooks/useDeleteTransaction";
-import { toast } from "sonner";
-import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +8,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./alert-dialog";
-function TransactionsTable({ transactions, emptyMessage }: { transactions: Transaction[]; emptyMessage: string }) {
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
+import { Button } from "./button";
+import { useDeleteTransaction } from "@/hooks/useDeleteTransaction";
+
+import { MoreHorizontal, Trash } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
+
+import type { Transaction } from "@/types/transactions";
+interface TableType {
+  transactions: Transaction[];
+  emptyMessage: string;
+  onDelete: () => void;
+}
+
+function TransactionsTable({ transactions, emptyMessage, onDelete }: TableType) {
   const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
 
   const deleteTransaction = useDeleteTransaction();
@@ -25,6 +33,7 @@ function TransactionsTable({ transactions, emptyMessage }: { transactions: Trans
     deleteTransaction.mutate(id, {
       onSuccess: () => {
         toast.success("delete successfully");
+        onDelete();
       },
 
       onError: (err) => {

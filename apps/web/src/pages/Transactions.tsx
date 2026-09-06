@@ -21,6 +21,12 @@ function Transactions() {
   const filtredTransactions = (transactions?.data ?? []).filter((item) => transactionFilter === "all" || item.type === transactionFilter);
   const emptyMessage = transactionFilter === "all" ? "No transactions found" : `No ${transactionFilter} found`;
 
+  const onSuccessDelete = () => {
+    if (transactions?.data.length === 1 && page > 1) {
+      setPage((prev) => prev - 1);
+    }
+  };
+
   useEffect(() => {
     if (isError) {
       toast.error(error.message);
@@ -43,7 +49,7 @@ function Transactions() {
         ) : (
           transactions && (
             <>
-              <TransactionsTable transactions={filtredTransactions} emptyMessage={emptyMessage} />
+              <TransactionsTable transactions={filtredTransactions} emptyMessage={emptyMessage} onDelete={onSuccessDelete} />
               <TransactionsPagination page={page} totalPages={transactions.pagination.totalPages ?? 0} setPage={setPage} />
             </>
           )
