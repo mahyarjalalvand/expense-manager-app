@@ -121,6 +121,10 @@
   @apply flex items-center justify-center;
 }
 
+@utility no-scrollbar {
+  @apply [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
