@@ -16,7 +16,7 @@ function Transactions() {
   const [page, setPage] = useState<number>(1);
   const limit = 10;
 
-  const { data: transactions, isError, isLoading, error } = useTransactions(page, limit);
+  const { data: transactions, isError, isLoading, isFetching, error } = useTransactions(page, limit);
 
   const filtredTransactions = (transactions?.data ?? []).filter((item) => transactionFilter === "all" || item.type === transactionFilter);
   const emptyMessage = transactionFilter === "all" ? "No transactions found" : `No ${transactionFilter} found`;
@@ -50,7 +50,7 @@ function Transactions() {
           transactions && (
             <>
               <TransactionsTable transactions={filtredTransactions} emptyMessage={emptyMessage} onDelete={onSuccessDelete} />
-              <TransactionsPagination page={page} totalPages={transactions.pagination.totalPages ?? 0} setPage={setPage} />
+              <TransactionsPagination page={page} totalPages={transactions.pagination.totalPages ?? 0} setPage={setPage} isFetching={isFetching && !isLoading} />
             </>
           )
         )}
