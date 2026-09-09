@@ -1,9 +1,8 @@
-import type { Dispatch, SetStateAction } from "react";
 import { ToggleGroup, ToggleGroupItem } from "./toggle-group";
 import type { TransactionsFilterState } from "@/types/transactions";
 type TransactionsFilterProps = {
   filter: TransactionsFilterState;
-  setFilter: Dispatch<SetStateAction<TransactionsFilterState>>;
+  setFilter: (filter: TransactionsFilterState) => void;
 };
 function TransactionsFilter({ filter, setFilter }: TransactionsFilterProps) {
   return (
