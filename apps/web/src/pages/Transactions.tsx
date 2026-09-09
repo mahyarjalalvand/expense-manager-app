@@ -1,3 +1,9 @@
+import { useEffect, useState } from "react";
+import { Loader2, PlusCircleIcon } from "lucide-react";
+
+import { toast } from "sonner";
+import type { TransactionsFilterState } from "@/types/transactions";
+
 import CreateTransactionDialog from "@/components/CreateTransactionDialog";
 import { Button } from "@/components/ui/button";
 import TransactionsFilter from "@/components/ui/TransactionsFilter";
@@ -5,10 +11,6 @@ import TransactionsPagination from "@/components/ui/TransactionsPagination";
 import TransactionsTable from "@/components/ui/TransactionsTable";
 
 import { useTransactions } from "@/hooks/useTransactions";
-import type { TransactionsFilterState } from "@/types/transactions";
-import { Loader2, PlusCircleIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 function Transactions() {
   const [open, setOpen] = useState(false);
@@ -16,15 +18,19 @@ function Transactions() {
   const [page, setPage] = useState<number>(1);
   const limit = 10;
 
-  const { data: transactions, isError, isLoading, isFetching, error } = useTransactions(page, limit);
+  const { data: transactions, isError, isLoading, isFetching, error } = useTransactions(page, limit, transactionFilter);
 
-  const filtredTransactions = (transactions?.data ?? []).filter((item) => transactionFilter === "all" || item.type === transactionFilter);
   const emptyMessage = transactionFilter === "all" ? "No transactions found" : `No ${transactionFilter} found`;
 
   const onSuccessDelete = () => {
     if (transactions?.data.length === 1 && page > 1) {
       setPage((prev) => prev - 1);
     }
+  };
+
+  const changeFilterHandler = (filter: TransactionsFilterState) => {
+    setTransactionFilter(filter);
+    setPage(1);
   };
 
   useEffect(() => {
@@ -39,7 +45,7 @@ function Transactions() {
           Add Transaction
           <PlusCircleIcon />
         </Button>
-        <TransactionsFilter filter={transactionFilter} setFilter={setTransactionFilter} />
+        <TransactionsFilter filter={transactionFilter} setFilter={changeFilterHandler} />
       </div>
       <div className="bg-background overflow-hidden rounded-xl border">
         {isLoading ? (
@@ -49,7 +55,7 @@ function Transactions() {
         ) : (
           transactions && (
             <>
-              <TransactionsTable transactions={filtredTransactions} emptyMessage={emptyMessage} onDelete={onSuccessDelete} />
+              <TransactionsTable transactions={transactions.data} emptyMessage={emptyMessage} onDelete={onSuccessDelete} />
               <TransactionsPagination page={page} totalPages={transactions.pagination.totalPages ?? 0} setPage={setPage} isFetching={isFetching && !isLoading} />
             </>
           )
