@@ -3,10 +3,14 @@ import { db } from "../db/index.js";
 import { transactions } from "../db/schema/transactions.js";
 import type { Transaction } from "../types/transaction.js";
 
-export const getTransactions = async (page: number, limit: number) => {
+export const getTransactions = async (page: number, limit: number, type: Transaction["type"] | "all") => {
   const offset = (page - 1) * limit;
-  const data = await db.select().from(transactions).orderBy(desc(transactions.createdAt)).limit(limit).offset(offset);
-  const res = await db.select({ count: count() }).from(transactions);
+
+  const whereCondition = type === "all" ? undefined : eq(transactions.type, type);
+
+  const data = await db.select().from(transactions).where(whereCondition).orderBy(desc(transactions.createdAt)).limit(limit).offset(offset);
+  const res = await db.select({ count: count() }).from(transactions).where(whereCondition);
+
   const total = res[0].count;
   const totalPages = Math.ceil(total / limit);
 
