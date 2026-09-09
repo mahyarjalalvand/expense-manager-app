@@ -1,22 +1,23 @@
 import { Hono } from "hono";
 
-import { createTransactionSchema, transactionIdSchema, updateTransactionSchema } from "../schemas/transactions.js";
+import { createTransactionSchema, transactionIdSchema, transactionsQuerySchema, updateTransactionSchema } from "../schemas/transactions.js";
 import { createTransaction, deleteTransaction, getTransactionById, getTransactions, updateTransaction } from "../services/transactions.service.js";
 
 const transactionsRoutes = new Hono();
 
 transactionsRoutes.get("/", async (c) => {
-  const page = Number(c.req.query("page") ?? "1");
-  const limit = Number(c.req.query("limit") ?? "10");
+  const parsed = transactionsQuerySchema.safeParse({
+    page: c.req.query("page"),
+    limit: c.req.query("limit"),
+    type: c.req.query("type"),
+  });
 
-  if (!Number.isInteger(page) || page < 1) {
-    return c.json({ message: "invalid page" }, 400);
-  }
-  if (!Number.isInteger(limit) || limit < 1) {
-    return c.json({ message: "invalid limit" }, 400);
+  if (!parsed.success) {
+    return c.json({ message: "Invalid query parameters", error: parsed.error.issues }, 400);
   }
 
-  const result = await getTransactions(page, limit);
+  const { limit, page, type } = parsed.data;
+  const result = await getTransactions(page, limit, type);
   return c.json(result);
 });
 
