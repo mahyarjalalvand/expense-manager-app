@@ -1,10 +1,10 @@
-import type { CreateTransaction, Transactions } from "@/types/transactions";
+import type { CreateTransaction, Transactions, TransactionsFilterState } from "@/types/transactions";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-export const getAllTransactions = async (page: number, limit: number): Promise<Transactions> => {
+export const getAllTransactions = async (page: number, limit: number, type: TransactionsFilterState): Promise<Transactions> => {
   try {
-    const res = await fetch(`${baseUrl}transactions?page=${page}&limit=${limit}`);
+    const res = await fetch(`${baseUrl}transactions?page=${page}&limit=${limit}&type=${type}`);
     if (!res.ok) {
       throw new Error(`failed to fetch transactions ${res.status}`);
     }
