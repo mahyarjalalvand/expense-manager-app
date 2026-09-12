@@ -8,6 +8,13 @@
       "when": 1786698687184,
       "tag": "0000_sour_goliath",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789225171008,
+      "tag": "0001_opposite_bullseye",
+      "breakpoints": true
     }
   ]
 }
