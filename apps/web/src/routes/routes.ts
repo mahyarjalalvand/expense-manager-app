@@ -5,6 +5,7 @@ export const routes = {
   categories: "/categories",
   settings: "/settings",
   transactions: "/transactions",
+  register: "/register",
 };
 
 export type AppRoute = (typeof routes)[keyof typeof routes];
