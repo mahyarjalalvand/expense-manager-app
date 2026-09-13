@@ -9,9 +9,8 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = new Hono();
 
+app.use("/api/*", cors({ origin: "http://localhost:5173", credentials: true }));
 app.all("/api/auth/*", (c) => auth.handler(c.req.raw));
-
-app.use("/api/*", cors({ origin: "http://localhost:5173" }));
 
 app.route("/api/health", healthRoutes);
 app.route("/api/dashboard", dashboardRoutes);
