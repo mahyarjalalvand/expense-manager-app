@@ -2,10 +2,12 @@ import { Hono } from "hono";
 
 import { createTransactionSchema, transactionIdSchema, transactionsQuerySchema, updateTransactionSchema } from "../schemas/transactions.js";
 import { createTransaction, deleteTransaction, getTransactionById, getTransactions, updateTransaction } from "../services/transactions.service.js";
+import { authMiddleware } from "../middlewares/auth.js";
 
 const transactionsRoutes = new Hono();
 
-transactionsRoutes.get("/", async (c) => {
+transactionsRoutes.get("/", authMiddleware, async (c) => {
+  const user = c.get("user");
   const parsed = transactionsQuerySchema.safeParse({
     page: c.req.query("page"),
     limit: c.req.query("limit"),
@@ -17,7 +19,7 @@ transactionsRoutes.get("/", async (c) => {
   }
 
   const { limit, page, type } = parsed.data;
-  const result = await getTransactions(page, limit, type);
+  const result = await getTransactions(page, limit, type, user.id);
   return c.json(result);
 });
 
