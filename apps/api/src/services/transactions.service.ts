@@ -1,12 +1,12 @@
-import { count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { transactions } from "../db/schema/transactions.js";
 import type { Transaction } from "../types/transaction.js";
 
-export const getTransactions = async (page: number, limit: number, type: Transaction["type"] | "all") => {
+export const getTransactions = async (page: number, limit: number, type: Transaction["type"] | "all", userId: string) => {
   const offset = (page - 1) * limit;
 
-  const whereCondition = type === "all" ? undefined : eq(transactions.type, type);
+  const whereCondition = type === "all" ? eq(transactions.userId, userId) : and(eq(transactions.type, type), eq(transactions.userId, userId));
 
   const data = await db.select().from(transactions).where(whereCondition).orderBy(desc(transactions.createdAt)).limit(limit).offset(offset);
   const res = await db.select({ count: count() }).from(transactions).where(whereCondition);
