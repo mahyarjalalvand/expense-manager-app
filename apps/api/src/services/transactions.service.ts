@@ -22,14 +22,12 @@ export const getTransactionById = async (id: string) => {
   return result[0];
 };
 
-export const createTransaction = async (data: Transaction) => {
+export const createTransaction = async (data: Transaction, userId: string) => {
   const result = await db
     .insert(transactions)
     .values({
-      title: data.title,
-      amount: data.amount,
-      category: data.category,
-      type: data.type,
+      ...data,
+      userId,
     })
     .returning();
   return result[0];
