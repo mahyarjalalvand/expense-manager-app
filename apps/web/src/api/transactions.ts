@@ -1,10 +1,10 @@
 import type { CreateTransaction, Transactions, TransactionsFilterState } from "@/types/transactions";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import { api } from "@/utils/api";
 
 export const getAllTransactions = async (page: number, limit: number, type: TransactionsFilterState): Promise<Transactions> => {
   try {
-    const res = await fetch(`${baseUrl}transactions?page=${page}&limit=${limit}&type=${type}`);
+    const res = await api(`transactions?page=${page}&limit=${limit}&type=${type}`);
+
     if (!res.ok) {
       throw new Error(`failed to fetch transactions ${res.status}`);
     }
@@ -16,13 +16,14 @@ export const getAllTransactions = async (page: number, limit: number, type: Tran
 };
 
 export const createTransaction = async (data: CreateTransaction): Promise<Transactions> => {
-  const res = await fetch(`${baseUrl}transactions`, {
+  const res = await api("transactions", {
     method: "POST",
     headers: {
-      "content-type": "aplication/json",
+      "content-type": "application/json",
     },
     body: JSON.stringify(data),
   });
+
   if (!res.ok) {
     throw new Error(`failed to create transaction: ${res.status}`);
   }
@@ -30,7 +31,7 @@ export const createTransaction = async (data: CreateTransaction): Promise<Transa
 };
 
 export const deleteTransaction = async (id: string) => {
-  const res = await fetch(`${baseUrl}transactions`, {
+  const res = await api("transactions", {
     method: "DELETE",
     headers: {
       "content-type": "application/json",
