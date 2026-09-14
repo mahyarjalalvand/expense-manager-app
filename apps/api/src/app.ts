@@ -6,7 +6,7 @@ import { auth } from "./auth.js";
 import healthRoutes from "./routes/health.routes.js";
 import transactionsRoutes from "./routes/transactions.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
-import { categoriesRoutes } from "./services/categories.service.js";
+import { categoriesRoutes } from "./routes/categories.routes.js";
 
 const app = new Hono();
 
