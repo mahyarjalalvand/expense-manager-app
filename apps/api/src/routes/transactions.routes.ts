@@ -44,7 +44,9 @@ transactionsRoutes.get("/:id", async (c) => {
   return c.json(transaction);
 });
 
-transactionsRoutes.post("/", async (c) => {
+transactionsRoutes.post("/", authMiddleware, async (c) => {
+  const user = c.get("user");
+
   const body = await c.req.json();
   const parsed = createTransactionSchema.safeParse(body);
 
@@ -58,7 +60,7 @@ transactionsRoutes.post("/", async (c) => {
     );
   }
 
-  const result = await createTransaction(parsed.data);
+  const result = await createTransaction(parsed.data, user.id);
   return c.json(result, 201);
 });
 
