@@ -9,6 +9,7 @@ import SummaryCard from "@/components/ui/SummaryCard";
 import type { DateRange } from "@/constant/dateRangeFilter";
 
 import { ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
+import AuthTest from "@/components/ui/AuthTest";
 
 function Dashboard() {
   const [dateRange, setDateRange] = useState<DateRange>("30d");
@@ -24,6 +25,7 @@ function Dashboard() {
   }
   return (
     <div>
+      <AuthTest />
       <p className="text-muted-foreground">overview of your financial activity</p>
       <div className="w-full grid gap-4 md:grid-cols-3 mt-5">
         <SummaryCard title="Income" variant="income" icon={ArrowDownLeft} value={data?.summary.income} description="Total income this month" />
