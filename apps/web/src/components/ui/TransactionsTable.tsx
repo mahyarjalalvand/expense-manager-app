@@ -64,7 +64,7 @@ function TransactionsTable({ transactions, emptyMessage, onDelete }: TableType) 
             transactions?.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>{item.title}</TableCell>
-                <TableCell>{item.category}</TableCell>
+                <TableCell>{item.category.name}</TableCell>
                 <TableCell>{item.type}</TableCell>
                 <TableCell>{item.amount}</TableCell>
                 <TableCell>{new Date(item.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })}</TableCell>
