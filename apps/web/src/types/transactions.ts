@@ -2,10 +2,16 @@ export interface Transaction {
   id: string;
   title: string;
   amount: number;
-  category: string;
+  categoryId: string;
   type: "expense" | "income";
   createdAt: string;
   updatedAt: string;
+  category: {
+    color: string;
+    icon: string;
+    id: string;
+    name: string;
+  };
 }
 
 export interface Transactions {
