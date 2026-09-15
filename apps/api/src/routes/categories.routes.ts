@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../middlewares/auth.js";
-import { createCategory, getCategories, updateCategory } from "../services/categories.service.js";
+import { createCategory, deleteCategory, getCategories, updateCategory } from "../services/categories.service.js";
 import { createCategorySchema, updateCategorySchema } from "../schemas/categories.js";
 
 export const categoriesRoutes = new Hono();
@@ -13,10 +13,11 @@ categoriesRoutes.get("/", authMiddleware, async (c) => {
 
 categoriesRoutes.post("/", authMiddleware, async (c) => {
   const user = c.get("user");
-  const body = c.req.json();
+  const body = await c.req.json();
+
   const parsed = createCategorySchema.safeParse(body);
   if (!parsed.success) {
-    return c.json({ message: "Invalid category data", errors: parsed.error.message }, 400);
+    return c.json({ message: "Invalid category data", errors: parsed.error.issues }, 400);
   }
   const result = await createCategory(user.id, parsed.data);
   return c.json(result, 201);
@@ -31,7 +32,7 @@ categoriesRoutes.patch("/:id", authMiddleware, async (c) => {
     return c.json(
       {
         message: "Invalid category data",
-        errors: parsed.error.message,
+        errors: parsed.error.issues,
       },
       400,
     );
@@ -46,5 +47,21 @@ categoriesRoutes.patch("/:id", authMiddleware, async (c) => {
     );
   }
 
+  return c.json(result);
+});
+
+categoriesRoutes.delete("/:id", authMiddleware, async (c) => {
+  const user = c.get("user");
+  const categoryId = c.req.param("id");
+
+  const result = await deleteCategory(user.id, categoryId);
+  if (!result) {
+    c.json(
+      {
+        message: "Category not found",
+      },
+      404,
+    );
+  }
   return c.json(result);
 });
