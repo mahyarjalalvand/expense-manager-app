@@ -24,3 +24,11 @@ export const updateCategory = async (userId: string, categoryId: string, data: U
 
   return result[0];
 };
+
+export const deleteCategory = async (categoryId: string, userId: string) => {
+  const result = await db
+    .delete(categories)
+    .where(and(eq(categories.id, categoryId), eq(categories.userId, userId)))
+    .returning();
+  return result[0];
+};
