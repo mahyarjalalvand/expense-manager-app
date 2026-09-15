@@ -37,6 +37,14 @@ categoriesRoutes.patch("/:id", authMiddleware, async (c) => {
     );
   }
   const result = updateCategory(user.id, categoryId, parsed.data);
+  if (!result) {
+    return c.json(
+      {
+        message: "Category not fount",
+      },
+      404,
+    );
+  }
 
   return c.json(result);
 });
