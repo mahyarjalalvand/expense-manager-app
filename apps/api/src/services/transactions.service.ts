@@ -2,13 +2,34 @@ import { and, count, desc, eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { transactions } from "../db/schema/transactions.js";
 import type { Transaction } from "../types/transaction.js";
+import { categories } from "../db/schema/categories.js";
 
 export const getTransactions = async (page: number, limit: number, type: Transaction["type"] | "all", userId: string) => {
   const offset = (page - 1) * limit;
 
   const whereCondition = type === "all" ? eq(transactions.userId, userId) : and(eq(transactions.type, type), eq(transactions.userId, userId));
 
-  const data = await db.select().from(transactions).where(whereCondition).orderBy(desc(transactions.createdAt)).limit(limit).offset(offset);
+  const data = await db
+    .select({
+      id: transactions.id,
+      title: transactions.title,
+      type: transactions.type,
+      amount: transactions.amount,
+      categoryId: transactions.categoryId,
+      createdAt: transactions.createdAt,
+      category: {
+        id: categories.id,
+        name: categories.name,
+        icon: categories.icon,
+        color: categories.color,
+      },
+    })
+    .from(transactions)
+    .innerJoin(categories, and(eq(transactions.categoryId, categories.id), eq(categories.userId, userId)))
+    .where(whereCondition)
+    .orderBy(desc(transactions.createdAt))
+    .limit(limit)
+    .offset(offset);
   const res = await db.select({ count: count() }).from(transactions).where(whereCondition);
 
   const total = res[0].count;
