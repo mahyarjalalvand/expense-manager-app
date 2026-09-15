@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../middlewares/auth.js";
-import { createCategory, getCategories } from "../services/categories.service.js";
-import { createCategorySchema } from "../schemas/categories.js";
+import { createCategory, getCategories, updateCategory } from "../services/categories.service.js";
+import { createCategorySchema, updateCategorySchema } from "../schemas/categories.js";
 
 export const categoriesRoutes = new Hono();
 
@@ -20,4 +20,23 @@ categoriesRoutes.post("/", authMiddleware, async (c) => {
   }
   const result = await createCategory(user.id, parsed.data);
   return c.json(result, 201);
+});
+categoriesRoutes.patch("/:id", authMiddleware, async (c) => {
+  const user = c.get("user");
+  const categoryId = c.req.param("id");
+  const body = await c.req.json();
+
+  const parsed = updateCategorySchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json(
+      {
+        message: "Invalid category data",
+        errors: parsed.error.message,
+      },
+      400,
+    );
+  }
+  const result = updateCategory(user.id, categoryId, parsed.data);
+
+  return c.json(result);
 });
