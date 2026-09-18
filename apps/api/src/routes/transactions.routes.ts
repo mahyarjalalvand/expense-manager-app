@@ -23,9 +23,9 @@ transactionsRoutes.get("/", authMiddleware, async (c) => {
   return c.json(result);
 });
 
-transactionsRoutes.get("/:id", async (c) => {
+transactionsRoutes.get("/:id", authMiddleware, async (c) => {
   const id = c.req.param("id");
-
+  const user = c.get("user");
   const parsed = transactionIdSchema.safeParse(id);
   if (!parsed.success) {
     return c.json(
@@ -36,7 +36,7 @@ transactionsRoutes.get("/:id", async (c) => {
     );
   }
 
-  const transaction = await getTransactionById(parsed.data);
+  const transaction = await getTransactionById(parsed.data, user.id);
   if (!transaction) {
     return c.json({ message: "Transaction not found" }, 404);
   }
@@ -61,6 +61,14 @@ transactionsRoutes.post("/", authMiddleware, async (c) => {
   }
 
   const result = await createTransaction(parsed.data, user.id);
+  if (!result) {
+    c.json(
+      {
+        message: "Category not found",
+      },
+      404,
+    );
+  }
   return c.json(result, 201);
 });
 

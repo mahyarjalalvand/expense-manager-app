@@ -38,12 +38,22 @@ export const getTransactions = async (page: number, limit: number, type: Transac
   return { data, pagination: { page, limit, total, totalPages } };
 };
 
-export const getTransactionById = async (id: string) => {
-  const result = await db.select().from(transactions).where(eq(transactions.id, id));
+export const getTransactionById = async (id: string, userId: string) => {
+  const result = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
   return result[0];
 };
 
 export const createTransaction = async (data: Transaction, userId: string) => {
+  const category = await db
+    .select()
+    .from(categories)
+    .where(and(eq(categories.userId, userId), eq(categories.id, data.categoryId)));
+  if (!category[0]) {
+    return null;
+  }
   const result = await db
     .insert(transactions)
     .values({
