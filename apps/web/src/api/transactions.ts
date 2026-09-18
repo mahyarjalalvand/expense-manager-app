@@ -1,4 +1,4 @@
-import type { CreateTransaction, Transactions, TransactionsFilterState } from "@/types/transactions";
+import type { CreateTransaction, Transaction, Transactions, TransactionsFilterState } from "@/types/transactions";
 import { api } from "@/utils/api";
 
 export const getAllTransactions = async (page: number, limit: number, type: TransactionsFilterState): Promise<Transactions> => {
@@ -15,7 +15,7 @@ export const getAllTransactions = async (page: number, limit: number, type: Tran
   }
 };
 
-export const createTransaction = async (data: CreateTransaction): Promise<Transactions> => {
+export const createTransaction = async (data: CreateTransaction): Promise<Transaction> => {
   const res = await api("transactions", {
     method: "POST",
     headers: {
