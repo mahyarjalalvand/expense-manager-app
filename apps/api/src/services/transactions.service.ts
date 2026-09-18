@@ -64,11 +64,11 @@ export const createTransaction = async (data: Transaction, userId: string) => {
   return result[0];
 };
 
-export const updateTransaction = async (data: Partial<Transaction>, id: string) => {
+export const updateTransaction = async (data: Partial<Transaction>, id: string, userId: string) => {
   const result = await db
     .update(transactions)
     .set({ ...data, updatedAt: new Date() })
-    .where(eq(transactions.id, id))
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
     .returning();
   return result[0];
 };

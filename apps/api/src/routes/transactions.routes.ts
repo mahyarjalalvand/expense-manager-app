@@ -72,9 +72,10 @@ transactionsRoutes.post("/", authMiddleware, async (c) => {
   return c.json(result, 201);
 });
 
-transactionsRoutes.patch("/:id", async (c) => {
+transactionsRoutes.patch("/:id", authMiddleware, async (c) => {
   const id = c.req.param("id");
   const parsedId = transactionIdSchema.safeParse(id);
+  const user = c.get("user");
 
   if (!parsedId.success) {
     return c.json(
@@ -97,7 +98,7 @@ transactionsRoutes.patch("/:id", async (c) => {
     );
   }
 
-  const transaction = await updateTransaction(parsedBody.data, parsedId.data);
+  const transaction = await updateTransaction(parsedBody.data, parsedId.data, user.id);
   if (!transaction) {
     return c.json({ message: "Transaction not found" }, 404);
   }
