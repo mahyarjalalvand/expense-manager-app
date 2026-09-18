@@ -10,6 +10,7 @@ import { useCreateTransactions } from "@/hooks/useCreateTransactions";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { useCategories } from "@/hooks/useCategories";
 
 type CreateTransactionProps = {
   open: boolean;
@@ -18,12 +19,15 @@ type CreateTransactionProps = {
 
 function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps) {
   const createTransaction = useCreateTransactions();
+
+  const { data: categories = [], isPending } = useCategories();
+
   const form = useForm<CreateTransactionForm>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: {
       title: "",
       amount: 0,
-      category: "",
+      categoryId: "",
       type: "expense",
     },
   });
@@ -80,12 +84,33 @@ function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionProps)
             )}
           />
           <Controller
-            name="category"
+            name="categoryId"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Category</FieldLabel>
-                <Input {...field} id={field.name} placeholder="e.g. food" aria-invalid={fieldState.invalid} />
+                <Select value={field.value} onValueChange={field.onChange} disabled={isPending}>
+                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid}>
+                    <SelectValue placeholder="select category">{categories.find((item) => item.id === field.value)?.name}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {isPending ? (
+                      <SelectItem value="loading" disabled>
+                        Loading categories...
+                      </SelectItem>
+                    ) : categories.length === 0 ? (
+                      <SelectItem value="empty" disabled>
+                        No categories found
+                      </SelectItem>
+                    ) : (
+                      categories.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
