@@ -73,7 +73,10 @@ export const updateTransaction = async (data: Partial<Transaction>, id: string, 
   return result[0];
 };
 
-export const deleteTransaction = async (id: string) => {
-  const result = await db.delete(transactions).where(eq(transactions.id, id)).returning();
+export const deleteTransaction = async (id: string, userId: string) => {
+  const result = await db
+    .delete(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .returning();
   return result[0];
 };

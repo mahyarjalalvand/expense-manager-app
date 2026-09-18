@@ -106,9 +106,11 @@ transactionsRoutes.patch("/:id", authMiddleware, async (c) => {
   return c.json(transaction);
 });
 
-transactionsRoutes.delete("/", async (c) => {
+transactionsRoutes.delete("/", authMiddleware, async (c) => {
   const id = await c.req.json();
   const parsedId = transactionIdSchema.safeParse(id);
+  const user = c.get("user");
+
   if (!parsedId.success) {
     return c.json(
       {
@@ -118,7 +120,7 @@ transactionsRoutes.delete("/", async (c) => {
     );
   }
 
-  const transaction = await deleteTransaction(parsedId.data);
+  const transaction = await deleteTransaction(parsedId.data, user.id);
   if (!transaction) {
     return c.json({ message: "Transaction not found" }, 404);
   }
