@@ -23,6 +23,11 @@ export interface Transactions {
     totalPages: number;
   };
 }
-export type CreateTransaction = Omit<Transactions, "id" | "createdAt" | "updatedAt">;
+export type CreateTransaction = {
+  title: string;
+  amount: number;
+  categoryId: string;
+  type: "expense" | "income";
+};
 
 export type TransactionsFilterState = "all" | "income" | "expense";
