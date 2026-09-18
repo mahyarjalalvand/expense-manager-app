@@ -12,20 +12,25 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "sonner";
 import Register from "./pages/Register";
+import LoginPage from "./pages/LoginPage";
+import AuthGuard from "./components/AuthGuard";
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppLayout>
-        <Routes>
-          <Route path={routes.dashboard} element={<Dashboard />} />
-          <Route path={routes.categories} element={<Categories />} />
-          <Route path={routes.settings} element={<Settings />} />
-          <Route path={routes.transactions} element={<Transactions />} />
-          <Route path={routes.register} element={<Register />} />
-        </Routes>
-        <Toaster />
-      </AppLayout>
+      <Routes>
+        <Route path={routes.register} element={<Register />} />
+        <Route path={routes.login} element={<LoginPage />} />
+        <Route element={<AuthGuard />}>
+          <Route element={<AppLayout />}>
+            <Route path={routes.dashboard} element={<Dashboard />} />
+            <Route path={routes.categories} element={<Categories />} />
+            <Route path={routes.settings} element={<Settings />} />
+            <Route path={routes.transactions} element={<Transactions />} />
+          </Route>
+        </Route>
+      </Routes>
+      <Toaster />
     </QueryClientProvider>
   );
 }
