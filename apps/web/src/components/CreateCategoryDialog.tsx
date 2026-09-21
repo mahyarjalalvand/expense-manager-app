@@ -9,12 +9,16 @@ import { categoryIcons } from "@/constant/categoryIcons";
 import { Check } from "lucide-react";
 import { categoryColors } from "@/constant/categoryColors";
 import { cn } from "@/lib/utils";
+import { useCreateCategory } from "@/hooks/useCategories";
+import { toast } from "sonner";
 type CreateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
 function CreateCategoryDialog({ open, onOpenChange }: CreateDialogProps) {
+  const createCategoryMutation = useCreateCategory();
+
   const form = useForm<CreateCategory>({
     resolver: zodResolver(createCategorySchema),
     defaultValues: {
@@ -24,7 +28,16 @@ function CreateCategoryDialog({ open, onOpenChange }: CreateDialogProps) {
     },
   });
   const submitHandler = (data: CreateCategory) => {
-    console.log(data);
+    createCategoryMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success("category created successfuly");
+        form.reset();
+        onOpenChange(false);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -68,7 +81,7 @@ function CreateCategoryDialog({ open, onOpenChange }: CreateDialogProps) {
                     );
                   })}
                 </div>
-                {fieldState && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
@@ -105,10 +118,12 @@ function CreateCategoryDialog({ open, onOpenChange }: CreateDialogProps) {
             )}
           />
           <div className="flex justify-end gap-2">
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" type="button" onClick={() => onOpenChange(false)} disabled={createCategoryMutation.isPending}>
               Cancel
             </Button>
-            <Button type="submit">Create category</Button>
+            <Button type="submit" disabled={createCategoryMutation.isPending}>
+              {createCategoryMutation.isPending ? "Creating..." : "Create category"}
+            </Button>
           </div>
         </form>
       </DialogContent>
