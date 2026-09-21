@@ -47,9 +47,7 @@ function Categories() {
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal />
-                    </Button>
+                    <MoreHorizontal />
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end">
