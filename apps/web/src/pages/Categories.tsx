@@ -26,38 +26,40 @@ function Categories() {
       <Card>
         <CardHeader className="text-base">Your categories</CardHeader>
         <CardContent className="space-y-2">
-          {categories?.map((category) => {
-            const Icon = categoryIcons[category.icon as keyof typeof categoryIcons];
-            return (
-              <div key={category.id} className="flex items-center justify-between rounded-lg border p-3">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="flex size-10 items-center justify-center rounded-lg text-lg"
-                    style={{
-                      backgroundColor: `${category.color}20`,
-                    }}>
-                    {Icon && <Icon className="size-5" />}
-                  </div>
+          {isPending ? (
+            <p>Loading categories ...</p>
+          ) : (
+            categories?.map((category) => {
+              const Icon = categoryIcons[category.icon as keyof typeof categoryIcons];
+              return (
+                <div key={category.id} className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="flex size-10 items-center justify-center rounded-lg text-lg"
+                      style={{
+                        backgroundColor: `${category.color}20`,
+                      }}>
+                      {Icon && <Icon className="size-5" />}
+                    </div>
 
-                  <div>
-                    <p className="text-sm font-medium">{category.name}</p>
-
-                    <p className="text-xs text-muted-foreground">Default category</p>
+                    <div>
+                      <p className="text-sm font-medium">{category.name}</p>
+                    </div>
                   </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <MoreHorizontal />
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <MoreHorizontal />
-                  </DropdownMenuTrigger>
-
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </CardContent>
       </Card>
       <CreateCategoryDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
