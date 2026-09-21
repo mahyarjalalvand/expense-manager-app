@@ -1,3 +1,4 @@
+import type { CreateCategory } from "@/schemas/categories.schema";
 import type { Category } from "@/types/categories";
 import { api } from "@/utils/api";
 
@@ -8,4 +9,18 @@ export const getCategories = async (): Promise<Category[]> => {
   }
   const data = await res.json();
   return await data;
+};
+
+export const createCategory = async (data: CreateCategory) => {
+  const res = await api("categories", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    throw new Error(`failed to create category ${res.status}`);
+  }
+  return res.json();
 };
