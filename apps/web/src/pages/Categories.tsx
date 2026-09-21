@@ -1,22 +1,24 @@
+import CreateCategoryDialog from "@/components/CreateCategoryDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { categoryIcons } from "@/constant/categoryIcons";
 import { useCategories } from "@/hooks/useCategories";
 import { MoreHorizontal, Plus } from "lucide-react";
+import { useState } from "react";
 
 function Categories() {
   const { data: categories, isPending } = useCategories();
+  const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
 
   return (
     <div className="space-y-6">
-      {/* header */}
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">categories</h1>
           <p className="text-sm text-muted-foreground"> Manage your income and expense categories</p>
         </div>
-        <Button>
+        <Button onClick={() => setCreateDialogOpen(true)}>
           <Plus />
           Add category
         </Button>
@@ -60,6 +62,7 @@ function Categories() {
           })}
         </CardContent>
       </Card>
+      <CreateCategoryDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
     </div>
   );
 }
