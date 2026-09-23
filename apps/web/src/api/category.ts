@@ -24,3 +24,17 @@ export const createCategory = async (data: CreateCategory) => {
   }
   return res.json();
 };
+
+export const editCategory = async (categoryId: string, data: Category) => {
+  const res = await api(`categories/${categoryId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    throw new Error(`failed to update category ${res.status}`);
+  }
+  return res.json();
+};
