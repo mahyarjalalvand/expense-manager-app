@@ -1,4 +1,4 @@
-import type { CreateCategory } from "@/schemas/categories.schema";
+import type { CreateCategory, UpdateCategory } from "@/schemas/categories.schema";
 import type { Category } from "@/types/categories";
 import { api } from "@/utils/api";
 
@@ -25,7 +25,7 @@ export const createCategory = async (data: CreateCategory) => {
   return res.json();
 };
 
-export const updateCategory = async (categoryId: string, data: Category) => {
+export const updateCategory = async (categoryId: string, data: UpdateCategory) => {
   const res = await api(`categories/${categoryId}`, {
     method: "PATCH",
     headers: {
