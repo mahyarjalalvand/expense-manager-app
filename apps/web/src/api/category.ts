@@ -25,7 +25,7 @@ export const createCategory = async (data: CreateCategory) => {
   return res.json();
 };
 
-export const editCategory = async (categoryId: string, data: Category) => {
+export const updateCategory = async (categoryId: string, data: Category) => {
   const res = await api(`categories/${categoryId}`, {
     method: "PATCH",
     headers: {
