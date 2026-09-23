@@ -16,7 +16,7 @@ type CreateDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-function CreateCategoryDialog({ open, onOpenChange }: CreateDialogProps) {
+function CategoryDialog({ open, onOpenChange }: CreateDialogProps) {
   const createCategoryMutation = useCreateCategory();
 
   const form = useForm<CreateCategory>({
@@ -131,4 +131,4 @@ function CreateCategoryDialog({ open, onOpenChange }: CreateDialogProps) {
   );
 }
 
-export default CreateCategoryDialog;
+export default CategoryDialog;
