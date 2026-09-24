@@ -40,12 +40,11 @@ export const updateCategory = async (categoryId: string, data: UpdateCategory) =
 };
 
 export const deleteCategory = async (categoryId: string) => {
-  const res = await api("categories", {
+  const res = await api(`categories/${categoryId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(categoryId),
   });
 
   if (!res.ok) {
