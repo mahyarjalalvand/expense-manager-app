@@ -54,7 +54,7 @@ categoriesRoutes.delete("/:id", authMiddleware, async (c) => {
   const user = c.get("user");
   const categoryId = c.req.param("id");
 
-  const result = await deleteCategory(user.id, categoryId);
+  const result = await deleteCategory(categoryId, user.id);
   if (!result) {
     c.json(
       {
