@@ -7,8 +7,28 @@ import healthRoutes from "./routes/health.routes.js";
 import transactionsRoutes from "./routes/transactions.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import { categoriesRoutes } from "./routes/categories.routes.js";
+import { CategoryInUseError } from "./errors/category.js";
 
 const app = new Hono();
+app.onError((err, c) => {
+  if (err instanceof CategoryInUseError) {
+    return c.json(
+      {
+        message: err.message,
+      },
+      409,
+    );
+  }
+
+  console.error(err);
+
+  return c.json(
+    {
+      message: "Internal server error",
+    },
+    500,
+  );
+});
 
 app.use("/api/*", cors({ origin: "http://localhost:5173", credentials: true }));
 app.all("/api/auth/*", (c) => auth.handler(c.req.raw));
