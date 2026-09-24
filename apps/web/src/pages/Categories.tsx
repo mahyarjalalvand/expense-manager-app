@@ -1,18 +1,35 @@
 import CategoryDialog from "@/components/CategoryDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import ConfirmAlertDialog from "@/components/ui/ConfirmAlertDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { categoryIcons } from "@/constant/categoryIcons";
-import { useCategories } from "@/hooks/useCategories";
+import { useCategories, useDeleteCategory } from "@/hooks/useCategories";
 import type { Category } from "@/types/categories";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 function Categories() {
   const { data: categories, isPending } = useCategories();
 
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
+  const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
+
+  const deleteCategoryMutaition = useDeleteCategory();
+
+  const deleteHandelr = (id: string) => {
+    deleteCategoryMutaition.mutate(id, {
+      onSuccess: () => {
+        toast.success("Category deleted successfully");
+        setDeleteCategory(null);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -56,7 +73,9 @@ function Categories() {
 
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setEditCategory(category)}>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive" onClick={() => setDeleteCategory(category)}>
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -74,6 +93,21 @@ function Categories() {
           }
         }}
         category={editCategory}
+      />
+      <ConfirmAlertDialog
+        open={!!deleteCategory}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteCategory(null);
+          }
+        }}
+        title="Delete category?"
+        description={`Are you sure you want to delete '${deleteCategory?.name}'?`}
+        onConfirm={() => {
+          if (!deleteCategory) return;
+          deleteHandelr(deleteCategory.id);
+        }}
+        isPending={deleteCategoryMutaition.isPending}
       />
     </div>
   );
