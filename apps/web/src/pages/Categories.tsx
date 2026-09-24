@@ -1,15 +1,18 @@
-import CreateCategoryDialog from "@/components/CreateCategoryDialog";
+import CategoryDialog from "@/components/CategoryDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { categoryIcons } from "@/constant/categoryIcons";
 import { useCategories } from "@/hooks/useCategories";
+import type { Category } from "@/types/categories";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { useState } from "react";
 
 function Categories() {
   const { data: categories, isPending } = useCategories();
+
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
+  const [editCategory, setEditCategory] = useState<Category | null>(null);
 
   return (
     <div className="space-y-6">
@@ -52,7 +55,7 @@ function Categories() {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setEditCategory(category)}>Edit</DropdownMenuItem>
                       <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -62,7 +65,16 @@ function Categories() {
           )}
         </CardContent>
       </Card>
-      <CreateCategoryDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+      <CategoryDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+      <CategoryDialog
+        open={!!editCategory}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditCategory(null);
+          }
+        }}
+        category={editCategory}
+      />
     </div>
   );
 }

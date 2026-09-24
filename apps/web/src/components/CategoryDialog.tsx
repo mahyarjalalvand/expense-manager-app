@@ -9,15 +9,21 @@ import { categoryIcons } from "@/constant/categoryIcons";
 import { Check } from "lucide-react";
 import { categoryColors } from "@/constant/categoryColors";
 import { cn } from "@/lib/utils";
-import { useCreateCategory } from "@/hooks/useCategories";
+import { useCreateCategory, useUpdateCategory } from "@/hooks/useCategories";
 import { toast } from "sonner";
+import type { Category } from "@/types/categories";
+import { useEffect } from "react";
 type CreateDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  category?: Category | null;
 };
 
-function CategoryDialog({ open, onOpenChange }: CreateDialogProps) {
+function CategoryDialog({ open, onOpenChange, category }: CreateDialogProps) {
   const createCategoryMutation = useCreateCategory();
+  const updateCategoryMutation = useUpdateCategory();
+
+  const isPending = createCategoryMutation.isPending || updateCategoryMutation.isPending;
 
   const form = useForm<CreateCategory>({
     resolver: zodResolver(createCategorySchema),
@@ -27,7 +33,40 @@ function CategoryDialog({ open, onOpenChange }: CreateDialogProps) {
       color: "",
     },
   });
+
+  useEffect(() => {
+    if (category) {
+      form.reset({
+        name: category.name,
+        icon: category.icon,
+        color: category.color,
+      });
+    } else {
+      form.reset({
+        name: "",
+        icon: "",
+        color: "",
+      });
+    }
+  }, [category, form]);
+
   const submitHandler = (data: CreateCategory) => {
+    if (category) {
+      updateCategoryMutation.mutate(
+        { data, categoryId: category.id },
+        {
+          onSuccess: () => {
+            toast.success("Category updated successfully");
+            form.reset();
+            onOpenChange(false);
+          },
+          onError: (error) => {
+            toast.error(error.message);
+          },
+        },
+      );
+      return;
+    }
     createCategoryMutation.mutate(data, {
       onSuccess: () => {
         toast.success("category created successfuly");
@@ -43,7 +82,7 @@ function CategoryDialog({ open, onOpenChange }: CreateDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add category</DialogTitle>
+          <DialogTitle>{category ? "Edit category" : "Add category"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-5">
           <Controller
@@ -63,7 +102,6 @@ function CategoryDialog({ open, onOpenChange }: CreateDialogProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Icon</FieldLabel>
-                {/* <Input {...field} id={field.name} placeholder="Icon name" aria-invalid={fieldState.invalid} /> */}
                 <div className="grid grid-cols-6 gap-2">
                   {Object.entries(categoryIcons).map(([name, Icon]) => {
                     const selected = field.value === name;
@@ -92,7 +130,6 @@ function CategoryDialog({ open, onOpenChange }: CreateDialogProps) {
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Color</FieldLabel>
 
-                {/* <Input {...field} id={field.name} placeholder="#22c55e" aria-invalid={fieldState.invalid} /> */}
                 <div className="flex flex-wrap gap-2">
                   {categoryColors.map((color) => {
                     const selected = field.value === color;
@@ -122,7 +159,7 @@ function CategoryDialog({ open, onOpenChange }: CreateDialogProps) {
               Cancel
             </Button>
             <Button type="submit" disabled={createCategoryMutation.isPending}>
-              {createCategoryMutation.isPending ? "Creating..." : "Create category"}
+              {isPending ? "Saving..." : category ? "Save changes" : "Create category"}
             </Button>
           </div>
         </form>
