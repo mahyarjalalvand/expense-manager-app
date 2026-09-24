@@ -1,13 +1,3 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
 import { Button } from "./button";
@@ -18,6 +8,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 import type { Transaction } from "@/types/transactions";
+import ConfirmAlertDialog from "./ConfirmAlertDialog";
 interface TableType {
   transactions: Transaction[];
   emptyMessage: string;
@@ -34,6 +25,7 @@ function TransactionsTable({ transactions, emptyMessage, onDelete }: TableType) 
       onSuccess: () => {
         toast.success("delete successfully");
         onDelete();
+        setTransactionToDelete(null);
       },
 
       onError: (err) => {
@@ -86,32 +78,21 @@ function TransactionsTable({ transactions, emptyMessage, onDelete }: TableType) 
           )}
         </TableBody>
       </Table>
-      <AlertDialog
+      <ConfirmAlertDialog
         open={!!transactionToDelete}
         onOpenChange={(open) => {
           if (!open) {
             setTransactionToDelete(null);
           }
-        }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete transaction?</AlertDialogTitle>
-            <AlertDialogDescription>{`Are you sure you want to delete '${transactionToDelete?.title}'`}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={() => {
-                if (!transactionToDelete) return;
-                deleteHandler(transactionToDelete?.id);
-                setTransactionToDelete(null);
-              }}>
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        }}
+        title="Delete transaction?"
+        description={`Are you sure you want to delete '${transactionToDelete?.title}'`}
+        onConfirm={() => {
+          if (!transactionToDelete) return;
+          deleteHandler(transactionToDelete?.id);
+        }}
+        isPending={deleteTransaction.isPending}
+      />
     </>
   );
 }
