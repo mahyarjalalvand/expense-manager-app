@@ -48,7 +48,8 @@ export const deleteCategory = async (categoryId: string) => {
   });
 
   if (!res.ok) {
-    throw new Error(`failed to delete category ${res.status}`);
+    const error = await res.json();
+    throw new Error(error.message);
   }
 
   return res.json();
