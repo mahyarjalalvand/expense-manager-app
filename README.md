@@ -1,64 +1,37 @@
 # Expense Manager
 
-[فارسی](README.fa.md) | English
+English | [فارسی](README.fa.md)
 
-An in-progress, full-stack application for recording income and expenses and viewing a monthly financial summary. It is organised as an npm-workspaces monorepo with a React client, a Hono API, and PostgreSQL storage.
+A full-stack personal-finance application built as an npm-workspaces monorepo with a React client, Hono API, and PostgreSQL database.
 
-> **Status:** under active development. The dashboard and transaction workflow are usable; categories, settings, authentication, and production hardening are not complete.
+> **Status:** authentication, categories, transactions, and the dashboard are implemented. Settings, transaction editing in the web UI, automated tests, and production hardening are still in progress.
 
-## Contents
+## Features
 
-- [Features and scope](#features-and-scope)
-- [Technology](#technology)
-- [Prerequisites](#prerequisites)
-- [Quick start](#quick-start)
-- [Configuration](#configuration)
-- [Available commands](#available-commands)
-- [API reference](#api-reference)
-- [Data model and migrations](#data-model-and-migrations)
-- [Project structure](#project-structure)
-- [Production and security notes](#production-and-security-notes)
-- [Contributing](#contributing)
+- Email/password registration and sign-in through Better Auth.
+- Protected web routes with user-scoped transactions and categories.
+- Create, filter, paginate, and delete transactions from the web UI.
+- Create, edit, and delete categories; each new account receives eight default categories.
+- Dashboard totals, a daily income/expense chart, and five recent transactions for `7d`, `30d`, `month`, or `year`.
+- Zod validation and PostgreSQL persistence through versioned Drizzle migrations.
 
-## Features and scope
-
-Implemented today:
-
-- Create, list, retrieve, update, and delete transactions through the API.
-- Create, list, and delete transactions from the web interface.
-- Validate transaction input with Zod in both the API and the creation form.
-- Show the current calendar month's income, expenses, balance, daily chart, and five most recent transactions.
-- Persist data in PostgreSQL through Drizzle ORM migrations.
-
-Not yet complete:
-
-- The Categories and Settings routes are placeholder pages.
-- The API supports `PATCH` updates, but the web interface does not expose editing yet.
-- Transaction filter controls are present in the UI but are not applied to the table data yet.
-- There is no authentication, authorisation, multi-user data isolation, or automated test suite.
-
-## Technology
+## Stack
 
 | Area | Tools |
 | --- | --- |
 | Web | React 19, TypeScript, Vite, Tailwind CSS, React Router |
 | Client data | TanStack Query, React Hook Form, Zod, Recharts |
-| API | Node.js, Hono, TypeScript, Zod |
+| API | Node.js, Hono, TypeScript, Better Auth, Zod |
 | Database | PostgreSQL 17, Drizzle ORM, Drizzle Kit |
 | Local infrastructure | Docker Compose |
-| Repository layout | npm workspaces |
 
-## Prerequisites
+## Run locally
 
-- Node.js 20 LTS or later (the project is currently verified with Node.js 24).
-- npm 10 or later.
-- Docker Engine with Docker Compose, for the local PostgreSQL service.
+Prerequisites: Node.js 20 LTS or later, npm 10 or later, and Docker Compose.
 
-## Quick start
+Run the following from the repository root.
 
-Run the following commands from the repository root.
-
-1. Install workspace dependencies.
+1. Install dependencies.
 
    ```bash
    npm install
@@ -70,33 +43,26 @@ Run the following commands from the repository root.
    docker compose up -d postgres
    ```
 
-3. Create the API environment file and set its connection string.
+3. Create `apps/api/.env`.
 
    ```bash
    cp apps/api/.env.example apps/api/.env
    ```
 
-   In `apps/api/.env`, set:
-
    ```env
    DATABASE_URL=postgresql://expense:expense@localhost:5432/expense_db
    ```
 
-4. Create `apps/web/.env` with the API base URL. The trailing slash is required by the current client URL construction.
+4. Create `apps/web/.env`. The trailing slash is required.
 
    ```env
    VITE_BASE_URL=http://localhost:3000/api/
    ```
 
-5. Apply the committed database migrations.
+5. Apply migrations and start each application in a separate terminal.
 
    ```bash
    npm run db:migrate -w api
-   ```
-
-6. Start the API and web app in separate terminals.
-
-   ```bash
    npm run dev:api
    ```
 
@@ -104,160 +70,82 @@ Run the following commands from the repository root.
    npm run dev:web
    ```
 
-The API listens on `http://localhost:3000`; Vite normally serves the web app at `http://localhost:5173`.
+The API runs on `http://localhost:3000` and the web app normally runs on `http://localhost:5173`. Create an account at `/register` before signing in.
 
-Verify that the API is running:
+Check the API:
 
 ```bash
 curl http://localhost:3000/api/health
 ```
 
-Expected response:
-
-```json
-{
-  "status": "ok",
-  "message": "API is running"
-}
-```
-
-To stop the local database while preserving its data:
+Stop PostgreSQL without deleting its volume:
 
 ```bash
 docker compose down
 ```
 
-## Configuration
+## Configuration and commands
 
-| File | Variable | Required | Description |
+| File | Variable | Description |
 | --- | --- | --- |
-| `apps/api/.env` | `DATABASE_URL` | Yes | PostgreSQL connection string used by the API and Drizzle Kit. |
-| `apps/web/.env` | `VITE_BASE_URL` | Yes | Browser-visible API base URL. It must end in `/`, for example `http://localhost:3000/api/`. |
+| `apps/api/.env` | `DATABASE_URL` | PostgreSQL connection string for the API, Better Auth, and Drizzle Kit. |
+| `apps/web/.env` | `VITE_BASE_URL` | Browser-visible API base URL ending in `/`. |
 
-`VITE_*` values are embedded in the client build. Never put passwords, API keys, or other secrets in them. The root `.gitignore` excludes `.env` files; use `apps/api/.env.example` as the API configuration template.
-
-The API currently permits cross-origin requests only from `http://localhost:5173`. If the web app runs elsewhere, update the CORS origin in `apps/api/src/app.ts` deliberately rather than opening it to every origin.
-
-## Available commands
+`VITE_*` variables are included in the browser build, so do not put secrets in them. If the client is hosted somewhere other than `http://localhost:5173`, update both the CORS origin in `apps/api/src/app.ts` and Better Auth's `trustedOrigins` in `apps/api/src/auth.ts`.
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev:api` | Run the API with file watching on port 3000. |
-| `npm run dev:web` | Run the Vite development server. |
-| `npm run build -w api` | Type-check and compile the API to `apps/api/dist`. |
-| `npm run start -w api` | Run the compiled API. Build it first. |
-| `npm run build -w web` | Type-check and create a production web build. |
-| `npm run preview -w web` | Preview the web production build locally. |
-| `npm run lint -w web` | Run the web ESLint configuration. |
-| `npm run db:generate -w api` | Generate a Drizzle migration after a schema change. |
-| `npm run db:migrate -w api` | Apply pending Drizzle migrations. |
+| `npm run dev:api` / `npm run dev:web` | Start the API or web development server. |
+| `npm run build -w api` / `npm run build -w web` | Build an individual workspace. |
+| `npm run start -w api` | Run the built API. |
+| `npm run lint -w web` | Lint the web workspace. |
+| `npm run db:generate -w api` | Generate a migration after a schema change. |
+| `npm run db:migrate -w api` | Apply pending migrations. |
+| `npm run db:studio -w api` | Open Drizzle Studio. |
 
-## API reference
+## API
 
 Base URL: `http://localhost:3000/api`
 
-| Method | Path | Description | Success response |
-| --- | --- | --- |
-| `GET` | `/health` | Check API availability. | `200` |
-| `GET` | `/dashboard` | Return this month's summary, daily income/expense data, and five latest transactions. | `200` |
-| `GET` | `/transactions` | Return all transactions. | `200` |
-| `GET` | `/transactions/:id` | Return one transaction by UUID. | `200` |
-| `POST` | `/transactions` | Create a transaction. | `201` |
-| `PATCH` | `/transactions/:id` | Update one or more transaction fields. | `200` |
-| `DELETE` | `/transactions` | Delete a transaction; send its UUID as a JSON string in the request body. | `200` |
+| Access | Method | Path | Description |
+| --- | --- | --- | --- |
+| Public | `GET` | `/health` | API health check. |
+| Public | `GET` | `/dashboard?range=30d` | Summary, daily data, and five recent transactions. `range` is required: `7d`, `30d`, `month`, or `year`. |
+| Public | `ALL` | `/auth/*` | Better Auth handler for registration, login, session, and logout flows. |
+| Authenticated | `GET` | `/transactions?page=1&limit=10&type=all` | Current user's transactions. `type` is `all`, `income`, or `expense`. |
+| Authenticated | `GET` | `/transactions/:id` | A transaction owned by the current user. |
+| Authenticated | `POST` | `/transactions` | Create a transaction. |
+| Authenticated | `PATCH` | `/transactions/:id` | Update transaction fields. |
+| Authenticated | `DELETE` | `/transactions` | Delete a transaction; pass its UUID as a JSON string in the body. |
+| Authenticated | `GET` / `POST` | `/categories` | List or create the current user's categories. |
+| Authenticated | `PATCH` / `DELETE` | `/categories/:id` | Update a category or delete one with no transactions. |
 
-### Transaction payload
-
-```json
-{
-  "title": "Groceries",
-  "amount": 250000,
-  "category": "Food",
-  "type": "expense"
-}
-```
-
-`title` and `category` must be non-empty strings. `type` must be `income` or `expense`. The creation form requires a positive amount; the API accepts a JSON number, so callers should also send a positive integer amount. Amounts are stored as PostgreSQL integers.
-
-The API adds `id`, `createdAt`, and `updatedAt` to saved transactions. Invalid identifiers or payloads return `400`; a missing transaction returns `404`.
-
-### cURL examples
-
-Create a transaction:
+The web client automatically sends the Better Auth session cookie. For direct calls, send that cookie yourself.
 
 ```bash
 curl --request POST http://localhost:3000/api/transactions \
   --header 'Content-Type: application/json' \
-  --data '{"title":"Salary","amount":50000000,"category":"Work","type":"income"}'
+  --cookie 'better-auth.session_token=<session-token>' \
+  --data '{"title":"Groceries","amount":250000,"categoryId":"<category-id>","type":"expense"}'
 ```
 
-Update a transaction:
+A transaction requires a non-empty `title`, numeric `amount`, `categoryId`, and `type` of `income` or `expense`. A category requires a non-empty `name`; `icon` and `color` are optional. Validation errors return `400`, protected requests without a session return `401`, missing records return `404`, and deleting an in-use category returns `409`.
 
-```bash
-curl --request PATCH http://localhost:3000/api/transactions/<transaction-id> \
-  --header 'Content-Type: application/json' \
-  --data '{"category":"Household"}'
-```
+## Data and migrations
 
-Delete a transaction (the current API expects the ID in the JSON body):
+Better Auth manages users, sessions, accounts, and verification records. Application tables are:
 
-```bash
-curl --request DELETE http://localhost:3000/api/transactions \
-  --header 'Content-Type: application/json' \
-  --data '"<transaction-id>"'
-```
-
-## Data model and migrations
-
-The `transactions` table contains the following fields:
-
-| Column | Type | Notes |
+| Table | Key fields | Notes |
 | --- | --- | --- |
-| `id` | UUID | Primary key generated by PostgreSQL. |
-| `title` | `varchar(255)` | Transaction description. |
-| `amount` | integer | Amount in the application's chosen smallest currency unit. |
-| `category` | `varchar(150)` | Free-text category. |
-| `type` | `varchar(40)` | `income` or `expense`. |
-| `created_at` | timestamp | Set when the record is created. |
-| `updated_at` | timestamp | Updated when the record changes. |
+| `categories` | `id`, `user_id`, `name`, `icon`, `color` | Personal categories, deleted with their user. |
+| `transactions` | `id`, `user_id`, `category_id`, `title`, `amount`, `type` | A transaction belongs to a user and category; its category cannot be deleted while in use. |
 
-When changing the schema:
+Both tables have `created_at` and `updated_at` timestamps. Amounts are PostgreSQL integers; use one consistent smallest currency unit.
 
-1. Update the Drizzle schema in `apps/api/src/db/schema/`.
-2. Generate a migration with `npm run db:generate -w api`.
-3. Review the SQL created under `apps/api/drizzle/` and commit it with the schema change.
-4. Apply it locally with `npm run db:migrate -w api`.
+For a schema change, update `apps/api/src/db/schema/`, run `npm run db:generate -w api`, review and commit the SQL in `apps/api/drizzle/`, then run `npm run db:migrate -w api`. Never alter a migration already used in a shared environment—create a forward-only migration instead.
 
-Do not edit a migration that has already been applied in a shared environment. Create a new forward-only migration instead, and back up production data before applying it.
+## Security notes
 
-## Project structure
-
-```text
-.
-├── apps/
-│   ├── api/
-│   │   ├── src/
-│   │   │   ├── db/           # Drizzle connection and schema
-│   │   │   ├── routes/       # Hono HTTP routes
-│   │   │   ├── schemas/      # Request validation
-│   │   │   └── services/     # Database operations and dashboard queries
-│   │   └── drizzle/          # Versioned SQL migrations
-│   └── web/
-│       └── src/
-│           ├── api/          # HTTP client functions
-│           ├── components/   # Layout and UI components
-│           ├── hooks/        # React Query hooks
-│           ├── pages/        # Route-level screens
-│           └── schemas/      # Client-side form validation
-├── docker-compose.yml        # Local PostgreSQL service
-└── package.json              # Workspace scripts and configuration
-```
-
-## Production and security notes
-
-- The Docker Compose username and password are development defaults only. Replace them with unique, secret-managed credentials in any deployed environment.
-- This project has no authentication or tenant isolation. Do not expose it publicly or use it for sensitive financial data until those controls, secure transport, rate limiting, logging, backups, and monitoring are in place.
-- Restrict CORS to known front-end origins. Configure environment-specific values outside source control.
-- Serve the API and database over private networks where possible; do not publish PostgreSQL's port unless it is required.
-- Treat database migrations as deployment steps. Back up the database and test migrations against a representative copy before production use.
-
+- The Compose database credentials are development defaults only; use unique, secret-managed credentials elsewhere.
+- The dashboard endpoint is public and its data is not scoped to the signed-in user. Do not expose the application or use real financial data until it is protected and user-scoped.
+- Before production use, configure a Better Auth secret and trusted origins, enable HTTPS, restrict CORS, and add rate limiting, monitoring, backups, and automated tests.
