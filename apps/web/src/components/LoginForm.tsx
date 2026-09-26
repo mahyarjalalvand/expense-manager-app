@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useSession } from "@/hooks/useSession";
 import { authClient } from "@/lib/auth-client";
 import { LoginSchema, type LoginFormValues } from "@/schemas/auth";
 import { Separator } from "@base-ui/react";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 
 function LoginForm() {
   const navigate = useNavigate();
+  const { refetch } = useSession();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginSchema),
@@ -24,7 +26,9 @@ function LoginForm() {
     authClient.signIn.email(data, {
       onSuccess: async () => {
         toast.success("Welcome back!");
-        await authClient.getSession();
+
+        await refetch();
+
         navigate("/");
       },
       onError: (error) => {
