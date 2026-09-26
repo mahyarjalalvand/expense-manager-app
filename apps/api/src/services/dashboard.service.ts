@@ -1,11 +1,11 @@
-import { and, desc, gte, lt, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { transactions } from "../db/schema/transactions.js";
 import { formatDateKey } from "../utils/formatDate.js";
 import type { DateRange } from "../schemas/dateRange.js";
 import { getDateRange } from "../utils/getDateRange.js";
 
-export const getDashboard = async (range: DateRange) => {
+export const getDashboard = async (range: DateRange, userId: string) => {
   const { startDate, endDate } = getDateRange(range);
   const result = await db
     .select({
@@ -13,7 +13,7 @@ export const getDashboard = async (range: DateRange) => {
       expenses: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'expense' THEN ${transactions.amount} ELSE 0 END),0)`,
     })
     .from(transactions)
-    .where(and(gte(transactions.createdAt, startDate), lt(transactions.createdAt, endDate)));
+    .where(and(gte(transactions.createdAt, startDate), lt(transactions.createdAt, endDate), eq(transactions.userId, userId)));
 
   const incomeExpenseByDay = await db
     .select({
@@ -22,7 +22,7 @@ export const getDashboard = async (range: DateRange) => {
       expense: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'expense' THEN ${transactions.amount} ELSE 0 END), 0)`,
     })
     .from(transactions)
-    .where(and(gte(transactions.createdAt, startDate), lt(transactions.createdAt, endDate)))
+    .where(and(gte(transactions.createdAt, startDate), lt(transactions.createdAt, endDate), eq(transactions.userId, userId)))
     .groupBy(sql`DATE_TRUNC('day', ${transactions.createdAt})`)
     .orderBy(sql`DATE_TRUNC('day' , ${transactions.createdAt})`);
 
@@ -51,7 +51,7 @@ export const getDashboard = async (range: DateRange) => {
     });
   }
 
-  const recentTransactions = await db.select().from(transactions).orderBy(desc(transactions.createdAt)).limit(5);
+  const recentTransactions = await db.select().from(transactions).where(eq(transactions.userId, userId)).orderBy(desc(transactions.createdAt)).limit(5);
 
   return { summary: { expenses: expenseNumber, income: incomeNumber, balance: incomeNumber - expenseNumber }, dailyData: completeDailyDate, recentTransactions };
 };
