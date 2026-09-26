@@ -1,5 +1,5 @@
 import { navigation } from "@/routes/routes";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -8,11 +8,8 @@ function Header() {
   const { pathname } = useLocation();
   const currentRouteTitle = navigation.find((item) => item.href === pathname)?.title;
 
-  const navigate = useNavigate();
-
   const logoutHandler = async () => {
     await authClient.signOut();
-    navigate("/");
   };
 
   return (
