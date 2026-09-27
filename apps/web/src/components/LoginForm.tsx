@@ -37,7 +37,7 @@ function LoginForm() {
     });
   };
   return (
-    <Card className="w-ful max-w-md border-border/60 shadow-xl">
+    <Card className="w-full max-w-md border-border/60 shadow-xl">
       <CardHeader className="space-y-3 text-center">
         <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-lg font-bold">EM</div>
         <div className="space-y-1">
@@ -47,7 +47,7 @@ function LoginForm() {
         </div>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(submitHandler)}>
+        <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-5">
           <Controller
             name="email"
             control={form.control}
@@ -66,9 +66,6 @@ function LoginForm() {
               <Field data-invalid={fieldState.invalid}>
                 <div className="flex items-center justify-between">
                   <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                  <button type="button" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
-                    Forget password?
-                  </button>
                 </div>
                 <Input {...field} id={field.name} type="password" placeholder="*********" autoComplete="current-password" aria-invalid={fieldState.invalid} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -86,7 +83,7 @@ function LoginForm() {
         </div>
 
         <p className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Don't have an account?
           <Link to="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
             Create account
           </Link>
