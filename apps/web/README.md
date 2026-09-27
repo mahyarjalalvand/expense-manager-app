@@ -1,77 +1,66 @@
-# React + TypeScript + Vite
+# Expense Manager Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The web workspace is a React 19 single-page application built with Vite. It uses Better Auth's React client for sessions and communicates with the API through credentialed requests.
 
-Currently, two official plugins are available:
+Return to the [project README](../../README.md) for complete local setup.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features and routes
 
-## React Compiler
+| Route | Access | Purpose |
+| --- | --- | --- |
+| /register | Public | Create an email/password account. |
+| /login | Public | Sign in with an existing account. |
+| / | Authenticated | Dashboard with range-based aggregates, chart, and recent transactions. |
+| /transactions | Authenticated | Create, filter, paginate, and delete transactions. |
+| /categories | Authenticated | Create, edit, and delete categories. |
+| /settings | Authenticated | Placeholder page. |
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+The client currently has no transaction-editing screen, although the API supports transaction updates.
 
-Note: This will impact Vite dev & build performances.
+## Layout
 
-## Expanding the ESLint configuration
+~~~text
+src/
+├── api/                     # Fetch functions for API resources
+├── components/              # Layout, dialogs, tables, charts, and UI primitives
+├── hooks/                   # TanStack Query data hooks and session hook
+├── pages/                   # Route-level screens
+├── schemas/                 # Form validation schemas
+├── lib/                     # Better Auth client and QueryClient
+└── routes/                  # Route constants and navigation metadata
+~~~
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Run
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Create apps/web/.env:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+~~~env
+VITE_BASE_URL=http://localhost:3000/api/
+~~~
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+The trailing slash is required. VITE_BASE_URL is public build-time configuration; do not put credentials or secrets in it. The configured API must permit the web app's origin and allow credentials. The local API is configured for http://localhost:5173.
 
-```
+From the repository root:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+~~~bash
+npm run dev:web
+~~~
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Vite normally starts at http://localhost:5173. The API must be running and migrated before registration, login, or data screens can work.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Scripts
 
-```
+| Command | Description |
+| --- | --- |
+| npm run dev -w web | Start the Vite development server. |
+| npm run build -w web | Run TypeScript project builds and create a production bundle. |
+| npm run lint -w web | Lint the workspace. |
+| npm run preview -w web | Serve the built bundle locally. |
+
+## Implementation notes
+
+- React Router protects application pages through AuthGuard; unauthenticated visitors are sent to /login.
+- TanStack Query caches categories, transactions, and dashboard responses, and invalidates relevant lists after mutations.
+- Requests use credentials: include so the Better Auth session cookie is sent to the API.
+- The UI uses Tailwind CSS, shadcn/Base UI primitives, Lucide icons, and Recharts.
+- The @/ import alias resolves to src/.
