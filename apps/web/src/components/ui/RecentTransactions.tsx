@@ -1,8 +1,8 @@
-import type { Transactions } from "@/types/transactions";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import type { DashboardData } from "@/types/dashboard";
 
 type RecentTransactionsProps = {
-  data: Transactions[];
+  data: DashboardData["recentTransactions"];
 };
 
 function RecentTransactions({ data }: RecentTransactionsProps) {
@@ -17,7 +17,7 @@ function RecentTransactions({ data }: RecentTransactionsProps) {
             <div key={item.id} className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{item.title}</p>
-                <p className="text-sm text-muted-foreground">{item.category}</p>
+                <p className="text-sm text-muted-foreground">{item.categoryName}</p>
               </div>
               <p>
                 {item.type === "income" ? "+" : "-"}
