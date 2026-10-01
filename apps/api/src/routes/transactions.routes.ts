@@ -62,7 +62,7 @@ transactionsRoutes.post("/", authMiddleware, async (c) => {
 
   const result = await createTransaction(parsed.data, user.id);
   if (!result) {
-    c.json(
+    return c.json(
       {
         message: "Category not found",
       },
