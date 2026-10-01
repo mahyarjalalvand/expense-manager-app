@@ -1,4 +1,4 @@
-import type { Transactions } from "./transactions";
+import type { Transaction } from "./transactions";
 
 export interface DashboardData {
   summary: {
@@ -11,5 +11,11 @@ export interface DashboardData {
     income: number;
     expenses: number;
   }[];
-  recentTransactions: Transactions[];
+  recentTransactions: {
+    amount: number;
+    title: string;
+    id: string;
+    type: Transaction["type"];
+    categoryName: string;
+  }[];
 }
