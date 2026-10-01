@@ -4,6 +4,7 @@ import { transactions } from "../db/schema/transactions.js";
 import { formatDateKey } from "../utils/formatDate.js";
 import type { DateRange } from "../schemas/dateRange.js";
 import { getDateRange } from "../utils/getDateRange.js";
+import { categories } from "../db/schema/categories.js";
 
 export const getDashboard = async (range: DateRange, userId: string) => {
   const { startDate, endDate } = getDateRange(range);
@@ -51,7 +52,19 @@ export const getDashboard = async (range: DateRange, userId: string) => {
     });
   }
 
-  const recentTransactions = await db.select().from(transactions).where(eq(transactions.userId, userId)).orderBy(desc(transactions.createdAt)).limit(5);
+  const recentTransactions = await db
+    .select({
+      id: transactions.id,
+      title: transactions.title,
+      type: transactions.type,
+      amount: transactions.amount,
+      categoryName: categories.name,
+    })
+    .from(transactions)
+    .innerJoin(categories, and(eq(transactions.categoryId, categories.id), eq(categories.userId, userId)))
+    .where(eq(transactions.userId, userId))
+    .orderBy(desc(transactions.createdAt))
+    .limit(5);
 
   return { summary: { expenses: expenseNumber, income: incomeNumber, balance: incomeNumber - expenseNumber }, dailyData: completeDailyDate, recentTransactions };
 };
