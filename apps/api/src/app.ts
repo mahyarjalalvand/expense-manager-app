@@ -30,7 +30,7 @@ app.onError((err, c) => {
   );
 });
 
-app.use("/api/*", cors({ origin: ["http://localhost:5173", "https://expense-manager-8w4359ofw-self-cd1d.vercel.app"], credentials: true }));
+app.use("/api/*", cors({ origin: ["http://localhost:5173", "https://expense-managet-app.vercel.app"], credentials: true }));
 app.all("/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/api/health", healthRoutes);

@@ -7,7 +7,7 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
-  trustedOrigins: ["http://localhost:5173", "https://expense-manager-8w4359ofw-self-cd1d.vercel.app"],
+  trustedOrigins: ["http://localhost:5173", "https://expense-managet-app.vercel.app"],
   emailAndPassword: {
     enabled: true,
   },
