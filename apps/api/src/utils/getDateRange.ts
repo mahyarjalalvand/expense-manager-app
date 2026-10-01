@@ -4,19 +4,23 @@ export const getDateRange = (range: DateRange) => {
   const now = new Date();
   switch (range) {
     case "7d": {
-      const startDate = new Date(now);
+      const endDate = new Date(now);
+      endDate.setHours(24, 0, 0, 0);
+      const startDate = new Date(endDate);
       startDate.setDate(now.getDate() - 7);
       return {
         startDate,
-        endDate: now,
+        endDate,
       };
     }
     case "30d": {
-      const startDate = new Date(now);
+      const endDate = new Date(now);
+      endDate.setHours(24, 0, 0, 0);
+      const startDate = new Date(endDate);
       startDate.setDate(now.getDate() - 30);
       return {
         startDate,
-        endDate: now,
+        endDate,
       };
     }
     case "month": {
