@@ -1,8 +1,43 @@
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { transactions } from "../db/schema/transactions.js";
 import type { Transaction } from "../types/transaction.js";
 import { categories } from "../db/schema/categories.js";
+
+const getUserBalance = async (userId: string) => {
+  const result = await db
+    .select({
+      income: sql<number>`
+    COALESCE(
+      SUM(
+        CASE
+          WHEN ${transactions.type} = 'income'
+          THEN ${transactions.amount}
+          ELSE 0
+        END
+      ),
+      0
+    )
+  `,
+      expenses: sql<number>`
+      COALESCE(
+        SUM(
+          CASE
+            WHEN ${transactions.type} = 'expense'
+            THEN ${transactions.amount}
+            ELSE 0
+          END
+        ),
+        0
+      )
+    `,
+    })
+    .from(transactions)
+    .where(eq(transactions.userId, userId));
+  const income = Number(result[0].income);
+  const expense = Number(result[0].expenses);
+  return income - expense;
+};
 
 export const getTransactions = async (page: number, limit: number, type: Transaction["type"] | "all", userId: string) => {
   const offset = (page - 1) * limit;
@@ -51,9 +86,23 @@ export const createTransaction = async (data: Transaction, userId: string) => {
     .select()
     .from(categories)
     .where(and(eq(categories.userId, userId), eq(categories.id, data.categoryId)));
+
   if (!category[0]) {
-    return null;
+    return {
+      success: false as const,
+      reason: "CATEGORY_NOT_FOUND" as const,
+    };
   }
+  if (data.type === "expense") {
+    const balance = await getUserBalance(userId);
+    if (data.amount > balance) {
+      return {
+        success: false as const,
+        reason: "INSUFFICIENT_BALANCE" as const,
+      };
+    }
+  }
+
   const result = await db
     .insert(transactions)
     .values({
@@ -61,7 +110,10 @@ export const createTransaction = async (data: Transaction, userId: string) => {
       userId,
     })
     .returning();
-  return result[0];
+  return {
+    success: true as const,
+    transaction: result[0],
+  };
 };
 
 export const updateTransaction = async (data: Partial<Transaction>, id: string, userId: string) => {

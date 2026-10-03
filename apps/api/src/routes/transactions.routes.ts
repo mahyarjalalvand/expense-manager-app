@@ -61,15 +61,26 @@ transactionsRoutes.post("/", authMiddleware, async (c) => {
   }
 
   const result = await createTransaction(parsed.data, user.id);
-  if (!result) {
-    return c.json(
-      {
-        message: "Category not found",
-      },
-      404,
-    );
+  if (!result.success) {
+    switch (result.reason) {
+      case "CATEGORY_NOT_FOUND":
+        return c.json(
+          {
+            message: "Category not found",
+          },
+          404,
+        );
+
+      case "INSUFFICIENT_BALANCE":
+        return c.json(
+          {
+            message: "Insufficient balance",
+          },
+          400,
+        );
+    }
   }
-  return c.json(result, 201);
+  return c.json(result?.transaction, 201);
 });
 
 transactionsRoutes.patch("/:id", authMiddleware, async (c) => {
