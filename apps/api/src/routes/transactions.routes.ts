@@ -109,12 +109,27 @@ transactionsRoutes.patch("/:id", authMiddleware, async (c) => {
     );
   }
 
-  const transaction = await updateTransaction(parsedBody.data, parsedId.data, user.id);
-  if (!transaction) {
-    return c.json({ message: "Transaction not found" }, 404);
-  }
+  const result = await updateTransaction(parsedBody.data, parsedId.data, user.id);
+  if (!result.success) {
+    switch (result.reason) {
+      case "TRANSACTION_NOT_FOUND":
+        return c.json(
+          {
+            message: "Transaction not found",
+          },
+          404,
+        );
 
-  return c.json(transaction);
+      case "INSUFFICIENT_BALANCE":
+        return c.json(
+          {
+            message: "Insufficient balance",
+          },
+          400,
+        );
+    }
+  }
+  return c.json(result.transactions);
 });
 
 transactionsRoutes.delete("/", authMiddleware, async (c) => {

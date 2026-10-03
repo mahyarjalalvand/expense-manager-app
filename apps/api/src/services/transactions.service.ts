@@ -117,12 +117,44 @@ export const createTransaction = async (data: Transaction, userId: string) => {
 };
 
 export const updateTransaction = async (data: Partial<Transaction>, id: string, userId: string) => {
+  const currentTransaction = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+
+  if (!currentTransaction[0]) {
+    return {
+      success: false as const,
+      reason: "TRANSACTION_NOT_FOUND" as const,
+    };
+  }
+  const current = currentTransaction[0];
+
+  const newType = data.type ?? current.type;
+  const newAmount = data.amount ?? current.amount;
+
+  if (newType === "expense") {
+    const balance = await getUserBalance(userId);
+
+    const availabelBalance = current.type === "expense" ? balance + current.amount : balance;
+
+    if (newAmount > availabelBalance) {
+      return {
+        success: false as const,
+        reason: "INSUFFICIENT_BALANCE" as const,
+      };
+    }
+  }
+
   const result = await db
     .update(transactions)
     .set({ ...data, updatedAt: new Date() })
     .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
     .returning();
-  return result[0];
+  return {
+    success: true as const,
+    transactions: result[0],
+  };
 };
 
 export const deleteTransaction = async (id: string, userId: string) => {
