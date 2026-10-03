@@ -1,29 +1,52 @@
 import { navigation } from "@/routes/routes";
 import { NavLink } from "react-router-dom";
-
+import {
+  Sidebar as ShadcnSidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 function Sidebar() {
   return (
-    <aside className="flex flex-col border-r bg-background">
-      <div className="flex py-5 items-center border-b px-6">
-        <h1>expense manager</h1>
-      </div>
-      <nav className="flex-1 space-y-2 p-4">
-        {navigation.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.href}
-              to={item.href}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`
-              }>
-              <Icon className="size-4" />
-              {item.title}
-            </NavLink>
-          );
-        })}
-      </nav>
-    </aside>
+    <ShadcnSidebar side="left" collapsible="icon">
+      <SidebarHeader className="border-b px-6 py-5 group-data-[collapsible=icon]:px-2">
+        <h1 className="font-semibold truncate group-data-[collapsible=icon]:hidden">expense manager</h1>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigation.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton className="py-6">
+                      <NavLink to={item.href} className="flex items-center gap-2">
+                        {({ isActive }) => (
+                          <>
+                            <Icon />
+                            <span className={isActive ? "font-medium text-primary" : ""}>{item.title}</span>
+                          </>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </ShadcnSidebar>
   );
 }
 
