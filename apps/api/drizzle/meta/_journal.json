@@ -36,6 +36,13 @@
       "when": 1789290838506,
       "tag": "0004_next_demogoblin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791232557621,
+      "tag": "0005_pink_madrox",
+      "breakpoints": true
     }
   ]
 }
