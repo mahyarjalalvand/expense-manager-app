@@ -1,7 +1,9 @@
+import AuthTest from "@/components/ui/AuthTest";
+
 function Settings() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold">setting</h1>
+      <AuthTest />
     </div>
   );
 }
