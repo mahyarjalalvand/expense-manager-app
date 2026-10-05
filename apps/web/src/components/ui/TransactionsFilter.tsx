@@ -9,6 +9,7 @@ function TransactionsFilter({ filter, setFilter }: TransactionsFilterProps) {
     <ToggleGroup
       variant="outline"
       value={[filter]}
+      className="max-md:w-full center mb-5"
       onValueChange={(value) => {
         const selectedFilter = value[0];
 

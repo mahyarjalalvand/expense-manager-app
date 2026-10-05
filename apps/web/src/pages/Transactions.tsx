@@ -40,8 +40,8 @@ function Transactions() {
   }, [isError, error]);
   return (
     <section>
-      <div className="flex w-full items-center justify-between gap-3">
-        <Button variant={"outline"} onClick={() => setOpen(true)} className="mb-4 flex items-center gap-2">
+      <div className="flex w-full items-center justify-between gap-3 flex-col md:flex-row">
+        <Button variant={"outline"} onClick={() => setOpen(true)} className="mb-4 flex items-center gap-2 max-md:w-full max-md:justify-between">
           Add Transaction
           <PlusCircleIcon />
         </Button>
