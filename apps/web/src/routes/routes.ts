@@ -1,10 +1,11 @@
-import { LayoutDashboard, Receipt, Settings2Icon, Tags, type LucideIcon } from "lucide-react";
+import { ChartNoAxesColumnIncreasing, LayoutDashboard, Receipt, Settings2Icon, Tags, type LucideIcon } from "lucide-react";
 
 export const routes = {
   dashboard: "/",
   categories: "/categories",
   settings: "/settings",
   transactions: "/transactions",
+  budgets: "/budgets",
   register: "/register",
   login: "/login",
 };
@@ -26,6 +27,11 @@ export const navigation: NavigationItem[] = [
     title: "categories",
     href: routes.categories,
     icon: Tags,
+  },
+  {
+    title: "Budgets",
+    href: routes.budgets,
+    icon: ChartNoAxesColumnIncreasing,
   },
   {
     title: "settings",
