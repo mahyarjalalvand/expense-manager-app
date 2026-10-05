@@ -14,7 +14,9 @@ export const getDashboard = async (range: DateRange, userId: string) => {
       expenses: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'expense' THEN ${transactions.amount} ELSE 0 END),0)`,
     })
     .from(transactions)
-    .where(and(gte(transactions.createdAt, startDate), lt(transactions.createdAt, endDate), eq(transactions.userId, userId)));
+    .where(eq(transactions.userId, userId));
+
+  const { expenses, income } = result[0];
 
   const incomeExpenseByDay = await db
     .select({
@@ -26,8 +28,6 @@ export const getDashboard = async (range: DateRange, userId: string) => {
     .where(and(gte(transactions.createdAt, startDate), lt(transactions.createdAt, endDate), eq(transactions.userId, userId)))
     .groupBy(sql`DATE_TRUNC('day', ${transactions.createdAt})`)
     .orderBy(sql`DATE_TRUNC('day' , ${transactions.createdAt})`);
-
-  const { expenses, income } = result[0];
 
   const incomeNumber = Number(income);
   const expenseNumber = Number(expenses);
