@@ -4,41 +4,6 @@ import { transactions } from "../db/schema/transactions.js";
 import type { Transaction } from "../types/transaction.js";
 import { categories } from "../db/schema/categories.js";
 
-const getUserBalance = async (userId: string) => {
-  const result = await db
-    .select({
-      income: sql<number>`
-    COALESCE(
-      SUM(
-        CASE
-          WHEN ${transactions.type} = 'income'
-          THEN ${transactions.amount}
-          ELSE 0
-        END
-      ),
-      0
-    )
-  `,
-      expenses: sql<number>`
-      COALESCE(
-        SUM(
-          CASE
-            WHEN ${transactions.type} = 'expense'
-            THEN ${transactions.amount}
-            ELSE 0
-          END
-        ),
-        0
-      )
-    `,
-    })
-    .from(transactions)
-    .where(eq(transactions.userId, userId));
-  const income = Number(result[0].income);
-  const expense = Number(result[0].expenses);
-  return income - expense;
-};
-
 export const getTransactions = async (page: number, limit: number, type: Transaction["type"] | "all", userId: string) => {
   const offset = (page - 1) * limit;
 
