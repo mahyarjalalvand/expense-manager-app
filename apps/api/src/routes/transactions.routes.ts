@@ -62,24 +62,9 @@ transactionsRoutes.post("/", authMiddleware, async (c) => {
 
   const result = await createTransaction(parsed.data, user.id);
   if (!result.success) {
-    switch (result.reason) {
-      case "CATEGORY_NOT_FOUND":
-        return c.json(
-          {
-            message: "Category not found",
-          },
-          404,
-        );
-
-      case "INSUFFICIENT_BALANCE":
-        return c.json(
-          {
-            message: "Insufficient balance",
-          },
-          400,
-        );
-    }
+    return c.json({ message: "Category not found" }, 404);
   }
+
   return c.json(result?.transaction, 201);
 });
 
@@ -111,23 +96,7 @@ transactionsRoutes.patch("/:id", authMiddleware, async (c) => {
 
   const result = await updateTransaction(parsedBody.data, parsedId.data, user.id);
   if (!result.success) {
-    switch (result.reason) {
-      case "TRANSACTION_NOT_FOUND":
-        return c.json(
-          {
-            message: "Transaction not found",
-          },
-          404,
-        );
-
-      case "INSUFFICIENT_BALANCE":
-        return c.json(
-          {
-            message: "Insufficient balance",
-          },
-          400,
-        );
-    }
+    return c.json({ message: "Transaction not found" }, 404);
   }
   return c.json(result.transactions);
 });
