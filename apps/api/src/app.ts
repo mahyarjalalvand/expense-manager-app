@@ -8,6 +8,7 @@ import transactionsRoutes from "./routes/transactions.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import { categoriesRoutes } from "./routes/categories.routes.js";
 import { CategoryInUseError } from "./errors/category.js";
+import { budgetsRoutes } from "./routes/budget.route.js";
 
 const app = new Hono();
 app.onError((err, c) => {
@@ -37,5 +38,6 @@ app.route("/api/health", healthRoutes);
 app.route("/api/dashboard", dashboardRoutes);
 app.route("/api/transactions", transactionsRoutes);
 app.route("/api/categories", categoriesRoutes);
+app.route("/api/budgets", budgetsRoutes);
 
 export default app;
