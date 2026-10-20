@@ -1,7 +1,7 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { budgets } from "../db/schema/budgets.js";
-import type { CreateBudget } from "../schemas/budgets.js";
+import type { CreateBudget, UpdateBudget } from "../schemas/budgets.js";
 import { transactions } from "../db/schema/transactions.js";
 import { getMonthDateRange } from "../utils/getMonthDateRange.js";
 
@@ -28,6 +28,22 @@ export type GetMonthlyBudgetResult =
       spent: number;
       remaining: number;
       percentageUsed: number;
+    }
+  | {
+      success: false;
+      reason: "BUDGET_NOT_FOUND";
+    };
+
+export type UpdateBudgetResult =
+  | {
+      success: true;
+      budget: typeof budgets.$inferSelect;
+    }
+  | {
+      success: false;
+      reason: "BUDGET_EXCEEDS_INCOME";
+      budgetAmount: number;
+      monthlyIncome: number;
     }
   | {
       success: false;
@@ -129,4 +145,65 @@ export const createBudget = async (userId: string, data: CreateBudget, confirmIn
     }
     throw error;
   }
+};
+
+export const updateBudget = async (userId: string, year: number, month: number, data: UpdateBudget): Promise<UpdateBudgetResult> => {
+  const [existingBudget] = await db
+    .select()
+    .from(budgets)
+    .where(and(eq(budgets.userId, userId), eq(budgets.year, year), eq(budgets.month, month)))
+    .limit(1);
+
+  if (!existingBudget) {
+    return {
+      success: false,
+      reason: "BUDGET_NOT_FOUND",
+    };
+  }
+
+  const targetAmount = data.amount ?? existingBudget.amount;
+
+  const { endDate, startDate } = getMonthDateRange(year, month);
+
+  const [incomeResult] = await db
+    .select({
+      total: sql<number>`COALESCE(SUM(${transactions.amount}) , 0)`,
+    })
+    .from(transactions)
+    .where(and(eq(transactions.userId, userId), eq(transactions.type, "income"), gte(transactions.createdAt, startDate), lt(transactions.createdAt, endDate)));
+
+  const monthlyIncome = Number(incomeResult.total);
+
+  if (targetAmount > monthlyIncome && !data.confirmIncomeMismatch) {
+    return {
+      success: false,
+      reason: "BUDGET_EXCEEDS_INCOME",
+      budgetAmount: targetAmount,
+      monthlyIncome,
+    };
+  }
+
+  const updateValues: {
+    name?: string;
+    amount?: number;
+    updateAt: Date;
+  } = { updateAt: new Date() };
+
+  if (data.name !== undefined) {
+    updateValues.name = data.name;
+  }
+
+  if (data.amount !== undefined) {
+    updateValues.amount = data.amount;
+  }
+  const [budget] = await db
+    .update(budgets)
+    .set(updateValues)
+    .where(and(eq(budgets.id, existingBudget.id), eq(budgets.userId, userId)))
+    .returning();
+
+  return {
+    success: true,
+    budget,
+  };
 };
