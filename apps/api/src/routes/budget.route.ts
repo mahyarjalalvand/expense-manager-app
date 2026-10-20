@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../middlewares/auth.js";
-import { createBudgetSchema } from "../schemas/budgets.js";
-import { createBudget, getMonthlyBudgetResult } from "../services/budget.service.js";
+import { createBudgetSchema, updateBudgetSchema } from "../schemas/budgets.js";
+import { createBudget, getMonthlyBudgetResult, updateBudget } from "../services/budget.service.js";
 
 export const budgetsRoutes = new Hono();
 
@@ -63,4 +63,57 @@ budgetsRoutes.post("/", authMiddleware, async (c) => {
     }
   }
   return c.json(result.budget, 201);
+});
+
+budgetsRoutes.patch("/:year/:month", authMiddleware, async (c) => {
+  const user = c.get("user");
+  const year = Number(c.req.param("year"));
+  const month = Number(c.req.param("month"));
+
+  if (!Number.isInteger(year) || year < 2000 || year > 2100 || !Number.isInteger(month) || month < 1 || month > 12) {
+    return c.json({ message: "Invalid year or month" }, 400);
+  }
+
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch (error) {
+    return c.json({ message: "Invalid JSON body" }, 400);
+  }
+
+  const parsed = updateBudgetSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json(
+      {
+        message: "Invalid budget data",
+        errors: parsed.error.issues,
+      },
+      400,
+    );
+  }
+
+  const result = await updateBudget(user.id, year, month, parsed.data);
+
+  if (!result.success) {
+    if (result.reason === "BUDGET_NOT_FOUND") {
+      return c.json(
+        {
+          message: "Budget not found for this month",
+        },
+        404,
+      );
+    }
+    if (result.reason === "BUDGET_EXCEEDS_INCOME") {
+      return c.json(
+        {
+          code: result.reason,
+          message: "Budget exceeds the recorded income for this month",
+          budgetAmount: result.budgetAmount,
+          monthlyIncome: result.monthlyIncome,
+        },
+        409,
+      );
+    }
+  }
+  return c.json(result.budget, 200);
 });
