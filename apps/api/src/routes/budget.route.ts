@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../middlewares/auth.js";
 import { createBudgetSchema, updateBudgetSchema } from "../schemas/budgets.js";
-import { createBudget, getMonthlyBudgetResult, updateBudget } from "../services/budget.service.js";
+import { createBudget, deleteBudget, getMonthlyBudgetResult, updateBudget } from "../services/budget.service.js";
 
 export const budgetsRoutes = new Hono();
 
@@ -116,4 +116,25 @@ budgetsRoutes.patch("/:year/:month", authMiddleware, async (c) => {
     }
   }
   return c.json(result.budget, 200);
+});
+
+budgetsRoutes.delete("/:year/:month", authMiddleware, async (c) => {
+  const user = c.get("user");
+  const year = Number(c.req.param("year"));
+  const month = Number(c.req.param("month"));
+  if (!Number.isInteger(year) || year < 2000 || year > 2100 || !Number.isInteger(month) || month < 1 || month > 12) {
+    return c.json({ message: "Invalid year or month" }, 400);
+  }
+
+  const result = await deleteBudget(user.id, year, month);
+  if (!result.success) {
+    return c.json(
+      {
+        message: "Budget not found for this month",
+      },
+      404,
+    );
+  }
+
+  return c.body(null, 204);
 });
