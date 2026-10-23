@@ -50,6 +50,15 @@ export type UpdateBudgetResult =
       reason: "BUDGET_NOT_FOUND";
     };
 
+export type DeleteBudgetResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      reason: "BUDGET_NOT_FOUND";
+    };
+
 export const getMonthlyBudgetResult = async (userId: string, year: number, month: number): Promise<GetMonthlyBudgetResult> => {
   const [budget] = await db
     .select()
@@ -205,5 +214,23 @@ export const updateBudget = async (userId: string, year: number, month: number, 
   return {
     success: true,
     budget,
+  };
+};
+
+export const deleteBudget = async (userId: string, year: number, month: number): Promise<DeleteBudgetResult> => {
+  const [deleteBudget] = await db
+    .delete(budgets)
+    .where(and(eq(budgets.userId, userId), eq(budgets.year, year), eq(budgets.month, month)))
+    .returning({ id: budgets.id });
+
+  if (!deleteBudget) {
+    return {
+      success: false,
+      reason: "BUDGET_NOT_FOUND",
+    };
+  }
+
+  return {
+    success: true,
   };
 };
