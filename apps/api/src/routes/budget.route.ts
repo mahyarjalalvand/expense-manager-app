@@ -16,7 +16,7 @@ budgetsRoutes.get("/:year/:month", authMiddleware, async (c) => {
 
   const result = await getMonthlyBudgetResult(user.id, year, month);
   if (!result.success) {
-    return c.json({ message: "Budget not found for this month" }, 404);
+    return c.json({ code: "BUDGET_NOT_FOUND", message: "Budget not found for this month" }, 404);
   }
 
   return c.json({
@@ -136,5 +136,5 @@ budgetsRoutes.delete("/:year/:month", authMiddleware, async (c) => {
     );
   }
 
-  return c.body(null, 204);
+  return c.json(result);
 });
