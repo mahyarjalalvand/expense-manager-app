@@ -26,3 +26,12 @@ export type UpdateBudget = {
   amount?: number;
   confirmIncomeMismatch?: boolean;
 };
+
+export type BudgetQueryResult =
+  | {
+      status: "found";
+      budget: MonthlyBudget;
+    }
+  | {
+      status: "not-found";
+    };
