@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Progress } from "./progress";
 import { useDeleteBudget } from "@/hooks/useBudget";
+import { toast } from "sonner";
+import { useState } from "react";
 
 type BudgetSummaryProps = {
   budget: MonthlyBudget;
@@ -25,8 +27,23 @@ type BudgetSummaryProps = {
 const formatMoney = (amount: number) => new Intl.NumberFormat("en-US").format(amount);
 
 function BudgetSummary({ budget, setIsEditing }: BudgetSummaryProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const progress = Math.min(100, Math.max(0, budget.percentageUsed));
+
   const deleteBudget = useDeleteBudget(budget.year, budget.month);
+
+  const handleDelete = () => {
+    deleteBudget.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Budget deleted successfully");
+        setIsDeleteDialogOpen(false);
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete budget");
+      },
+    });
+  };
 
   const stats = [
     { label: "Monthly budget", amount: budget.amount },
@@ -46,7 +63,7 @@ function BudgetSummary({ budget, setIsEditing }: BudgetSummaryProps) {
             Edit
           </Button>
 
-          <AlertDialog>
+          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
             <AlertDialogTrigger
               render={
                 <Button variant="destructive" size="sm">
@@ -68,7 +85,7 @@ function BudgetSummary({ budget, setIsEditing }: BudgetSummaryProps) {
                 <AlertDialogAction
                   onClick={(event) => {
                     event.preventDefault();
-                    deleteBudget.mutate();
+                    handleDelete();
                   }}>
                   {deleteBudget.isPending ? "Deleting..." : "Delete"}
                 </AlertDialogAction>
