@@ -1,32 +1,15 @@
 import { useState } from "react";
 import { budgetFormSchema, type BudgetFormValues } from "@/schemas/budget";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Field, FieldError, FieldLabel } from "./ui/field";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
 
-import { useCreateBudget } from "@/hooks/useBudget";
-import type { MonthlyBudget } from "@/types/budgets";
-
-type BudgetApiError = Error & {
-  code?: string;
-  budgetAmount?: number;
-  monthlyIncome?: number;
-};
+import { useCreateBudget, useUpdateBudget } from "@/hooks/useBudget";
+import type { BudgetApiError, MonthlyBudget } from "@/types/budgets";
+import BudgetIncomeConfirmDialog from "./ui/BudgetIncomeConfirmDialog";
+import BudgetFormFields from "./ui/BudgetFormFields";
 
 type BudgetFormProps = {
   setIsEditing?: (value: boolean) => void;
@@ -42,138 +25,89 @@ function BudgetForm({ year, month, isEditing, setIsEditing, budget }: BudgetForm
   const form = useForm<BudgetFormValues>({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: {
-      name: budget.name ?? "",
-      amount: budget.amount ?? 0,
+      name: budget?.name ?? "",
+      amount: budget?.amount ?? 0,
     },
   });
 
   const createBudget = useCreateBudget(year, month);
+  const updateBudget = useUpdateBudget(year, month);
 
-  const submitHandler = (data: BudgetFormValues) => {
-    createBudget.mutate(data, {
-      onSuccess: () => {
-        toast.success("Budget created successfully");
-        form.reset();
-        // setPendingValues(null);
-        setIsEditing?.(false);
-      },
-      onError: (error) => {
+  const handleSuccess = () => {
+    toast.success(isEditing ? "Budget updated successfully" : "Budget created successfully");
+
+    form.reset();
+    setPendingValues(null);
+    setIsEditing?.(false);
+  };
+
+  const executeMutation = (values: BudgetFormValues, confirmed = false) => {
+    const mutationValues = {
+      ...values,
+      ...(confirmed ? { confirmIncomeMismatch: true } : {}),
+    };
+
+    const options = {
+      onSuccess: handleSuccess,
+
+      onError: (error: Error) => {
         const apiError = error as BudgetApiError;
 
         if (apiError.code === "BUDGET_EXCEEDS_INCOME") {
-          setPendingValues(data);
+          setPendingValues(values);
           return;
         }
 
         toast.error(apiError.message);
       },
-    });
+    };
+
+    if (isEditing) {
+      updateBudget.mutate(mutationValues, options);
+    } else {
+      createBudget.mutate(mutationValues, options);
+    }
+  };
+
+  const submitHandler = (data: BudgetFormValues) => {
+    executeMutation(data);
   };
 
   const confirmBudget = () => {
     if (!pendingValues) return;
 
-    createBudget.mutate(
-      {
-        ...pendingValues,
-        confirmIncomeMismatch: true,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Budget created successfully");
-          form.reset();
-          setPendingValues(null);
-          setIsEditing?.(false);
-        },
-        onError: (error) => {
-          toast.error(error.message);
-        },
-      },
-    );
+    executeMutation(pendingValues, true);
+  };
+
+  const isPending = createBudget.isPending || updateBudget.isPending;
+
+  const handleCancelEditing = () => {
+    form.reset({
+      name: budget?.name ?? "",
+      amount: budget?.amount ?? 0,
+    });
+
+    setIsEditing?.(false);
   };
 
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Budget</CardTitle>
+          <CardTitle>{isEditing ? "Edit budget" : "Create budget"}</CardTitle>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-5">
-            <Controller
-              name="name"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="name-input">Budget name:</FieldLabel>
-
-                  <Input {...field} id="name-input" aria-invalid={fieldState.invalid} placeholder="Please enter your budget name" autoComplete="off" />
-
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <Controller
-              name="amount"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="amount-input">Budget amount:</FieldLabel>
-
-                  <Input
-                    {...field}
-                    value={field.value}
-                    id="amount-input"
-                    aria-invalid={fieldState.invalid}
-                    type="number"
-                    placeholder="Please enter the budget amount"
-                    onChange={(event) => field.onChange(event.target.valueAsNumber)}
-                    autoComplete="off"
-                  />
-
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            <div className="flex gap-3">
-              {isEditing && (
-                <Button type="button" variant="destructive" onClick={() => setIsEditing(false)}>
-                  Cancel
-                </Button>
-              )}
-
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                Save
-              </Button>
-            </div>
-          </form>
+          <BudgetFormFields form={form} submit={submitHandler} pending={isPending} isEditing={isEditing} onCancel={handleCancelEditing} />
         </CardContent>
       </Card>
-
-      <AlertDialog
+      <BudgetIncomeConfirmDialog
         open={pendingValues !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingValues(null);
-        }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Budget exceeds your income</AlertDialogTitle>
-
-            <AlertDialogDescription>
-              The budget amount is higher than your recorded income for this month. Do you want to create the budget anyway?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingValues(null)}>Cancel</AlertDialogCancel>
-
-            <AlertDialogAction onClick={confirmBudget}>Create anyway</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        isEditing={isEditing}
+        isPending={isPending}
+        onConfirm={confirmBudget}
+        onCancel={() => setPendingValues(null)}
+      />
     </>
   );
 }
