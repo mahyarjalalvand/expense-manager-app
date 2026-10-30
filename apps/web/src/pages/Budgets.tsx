@@ -11,7 +11,6 @@ function Budgets() {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
 
   const { data, isPending, isError } = useGetBudget(selectedYear, selectedMonth);
-  // console.log(data);
   return (
     <div className="space-y-6">
       {isPending && <p className="text-sm text-muted-foreground">Loading budget...</p>}
@@ -23,7 +22,7 @@ function Budgets() {
           <p className="mt-2 text-sm text-muted-foreground">Create a budget to start tracking your monthly expenses.</p>
 
           <div className="mt-6 text-left">
-            <BudgetForm year={selectedYear} month={selectedMonth} isEditing={false} setIsEditing={setIsEditing} />
+            <BudgetForm year={selectedYear} month={selectedMonth} isEditing={false} />
           </div>
         </div>
       )}
