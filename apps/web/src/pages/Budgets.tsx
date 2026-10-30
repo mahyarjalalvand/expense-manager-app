@@ -32,7 +32,7 @@ function Budgets() {
         <>
           <BudgetSummary budget={data} setIsEditing={setIsEditing} />
 
-          {isEditing && <BudgetForm year={selectedYear} month={selectedMonth} isEditing={isEditing} setIsEditing={setIsEditing} />}
+          {isEditing && <BudgetForm year={selectedYear} month={selectedMonth} isEditing={isEditing} setIsEditing={setIsEditing} budget={data} />}
         </>
       )}
     </div>

@@ -20,6 +20,7 @@ import {
 } from "./ui/alert-dialog";
 
 import { useCreateBudget } from "@/hooks/useBudget";
+import type { MonthlyBudget } from "@/types/budgets";
 
 type BudgetApiError = Error & {
   code?: string;
@@ -32,16 +33,17 @@ type BudgetFormProps = {
   year: number;
   month: number;
   isEditing: boolean;
+  budget?: MonthlyBudget;
 };
 
-function BudgetForm({ year, month, isEditing, setIsEditing }: BudgetFormProps) {
+function BudgetForm({ year, month, isEditing, setIsEditing, budget }: BudgetFormProps) {
   const [pendingValues, setPendingValues] = useState<BudgetFormValues | null>(null);
 
   const form = useForm<BudgetFormValues>({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: {
-      name: "",
-      amount: 0,
+      name: budget.name ?? "",
+      amount: budget.amount ?? 0,
     },
   });
 
@@ -53,7 +55,7 @@ function BudgetForm({ year, month, isEditing, setIsEditing }: BudgetFormProps) {
         toast.success("Budget created successfully");
         form.reset();
         // setPendingValues(null);
-        // setIsEditing?.(false);
+        setIsEditing?.(false);
       },
       onError: (error) => {
         const apiError = error as BudgetApiError;
