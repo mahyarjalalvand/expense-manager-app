@@ -34,20 +34,6 @@ function BudgetSummary({ budget, setIsEditing }: BudgetSummaryProps) {
     { label: "Remaining", amount: budget.remaining },
   ];
 
-  // if (isEditing) {
-  //   return (
-  //     <Card>
-  //       <CardHeader>
-  //         <CardTitle>Edit budget</CardTitle>
-  //       </CardHeader>
-
-  //       <CardContent>
-  //         <BudgetForm budget={budget} onCancel={() => setIsEditing(false)} onSuccess={() => setIsEditing(false)} />
-  //       </CardContent>
-  //     </Card>
-  //   );
-  // }
-
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-4">
@@ -61,11 +47,12 @@ function BudgetSummary({ budget, setIsEditing }: BudgetSummaryProps) {
           </Button>
 
           <AlertDialog>
-            <AlertDialogTrigger>
-              {/* <Button variant="destructive" size="sm"> */}
-              Delete
-              {/* </Button> */}
-            </AlertDialogTrigger>
+            <AlertDialogTrigger
+              render={
+                <Button variant="destructive" size="sm">
+                  Delete
+                </Button>
+              }></AlertDialogTrigger>
 
             <AlertDialogContent>
               <AlertDialogHeader>
