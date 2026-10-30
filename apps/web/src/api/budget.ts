@@ -48,7 +48,7 @@ export const createBudget = async (data: CreateBudget): Promise<Budget> => {
 };
 
 export const updateBudget = async (year: number, month: number, values: BudgetFormValues) => {
-  const res = await api(`/budgets/${year}/${month}`, {
+  const res = await api(`budgets/${year}/${month}`, {
     method: "PATCH",
     headers: {
       "content-type": "application/json",
@@ -57,7 +57,9 @@ export const updateBudget = async (year: number, month: number, values: BudgetFo
   });
   const data = await res.json().catch(() => null);
   if (!res.ok) {
-    throw new Error(data.message || "Failed to update budget");
+    const error = new Error(data.message || "Failed to update budget");
+    Object.assign(error, data);
+    throw error;
   }
   return data;
 };
