@@ -28,7 +28,7 @@ export const createBudget = async (data: CreateBudget): Promise<Budget> => {
 
   const resData = await res.json().catch(() => null);
   if (!res.ok) {
-    const error = new Error(resData.message || "Failed to create budget");
+    const error = new Error(resData?.message ?? `Failed to create budget (${res.status})`);
     Object.assign(error, resData);
 
     throw error;
@@ -47,7 +47,7 @@ export const updateBudget = async (year: number, month: number, values: BudgetFo
   });
   const data = await res.json().catch(() => null);
   if (!res.ok) {
-    const error = new Error(data.message || "Failed to update budget");
+    const error = new Error(data?.message ?? `Failed to update budget (${res.status})`);
     Object.assign(error, data);
     throw error;
   }
@@ -58,9 +58,11 @@ export const deleteBudget = async (year: number, month: number) => {
   const res = await api(`budgets/${year}/${month}`, {
     method: "DELETE",
   });
+  const data = await res.json().catch(() => null);
   if (!res.ok) {
-    const data = await res.json();
-    throw new Error(data.message || "Failed to delete Budget");
+    const error = new Error(data?.message ?? `Failed to delete budget (${res.status})`);
+    Object.assign(error, data);
+    throw error;
   }
-  return res.json();
+  return data;
 };
