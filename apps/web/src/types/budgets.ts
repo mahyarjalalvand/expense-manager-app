@@ -35,3 +35,9 @@ export type BudgetQueryResult =
   | {
       status: "not-found";
     };
+
+export type BudgetApiError = Error & {
+  code?: string;
+  budgetAmount?: number;
+  monthlyIncome?: number;
+};
