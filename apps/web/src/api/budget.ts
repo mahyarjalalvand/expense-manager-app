@@ -1,3 +1,4 @@
+import type { BudgetFormValues } from "@/schemas/budget";
 import type { Budget, CreateBudget, MonthlyBudget } from "@/types/budgets";
 import { api } from "@/utils/api";
 
@@ -46,6 +47,21 @@ export const createBudget = async (data: CreateBudget): Promise<Budget> => {
   return res.json();
 };
 
+export const updateBudget = async (year: number, month: number, values: BudgetFormValues) => {
+  const res = await api(`/budgets/${year}/${month}`, {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(values),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to update budget");
+  }
+  return data;
+};
+
 export const deleteBudget = async (year: number, month: number) => {
   const res = await api(`budgets/${year}/${month}`, {
     method: "DELETE",
@@ -56,4 +72,3 @@ export const deleteBudget = async (year: number, month: number) => {
   }
   return res.json();
 };
-// deleeteBudget(2026, 10);
