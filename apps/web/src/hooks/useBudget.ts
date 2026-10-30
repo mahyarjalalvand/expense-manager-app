@@ -1,4 +1,4 @@
-import { createBudget, deleteBudget, getMonthlyBudget } from "@/api/budget";
+import { createBudget, deleteBudget, getMonthlyBudget, updateBudget } from "@/api/budget";
 import type { BudgetFormValues } from "@/schemas/budget";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -29,6 +29,23 @@ export const useCreateBudget = (year: number, month: number) => {
       }),
   });
 };
+
+export const useUpdateBudget = (year: number, month: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (values: BudgetFormValues) => updateBudget(year, month, values),
+    onSuccess: () => {
+      toast.success("Budget updated successfully");
+      queryClient.invalidateQueries({
+        queryKey: [...budgetQueryKey, year, month],
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update budget");
+    },
+  });
+};
+
 export const useDeleteBudget = (year: number, month: number) => {
   const queryClient = useQueryClient();
 
