@@ -4,6 +4,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const budgetQueryKey = ["budget"];
+export type BudgetMutationValues = BudgetFormValues & {
+  confirmIncomeMismatch?: boolean;
+};
 
 export const useGetBudget = (year: number, month: number) => {
   return useQuery({
@@ -16,7 +19,7 @@ export const useCreateBudget = (year: number, month: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (values: BudgetFormValues) =>
+    mutationFn: (values: BudgetMutationValues) =>
       createBudget({
         ...values,
         year,
@@ -33,15 +36,11 @@ export const useCreateBudget = (year: number, month: number) => {
 export const useUpdateBudget = (year: number, month: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: BudgetFormValues) => updateBudget(year, month, values),
+    mutationFn: (values: BudgetMutationValues) => updateBudget(year, month, values),
     onSuccess: () => {
-      toast.success("Budget updated successfully");
       queryClient.invalidateQueries({
         queryKey: [...budgetQueryKey, year, month],
       });
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update budget");
     },
   });
 };
@@ -52,13 +51,9 @@ export const useDeleteBudget = (year: number, month: number) => {
   return useMutation({
     mutationFn: () => deleteBudget(year, month),
     onSuccess: () => {
-      toast.success("Budget deleted successfully");
       queryClient.invalidateQueries({
         queryKey: [...budgetQueryKey, year, month],
       });
-    },
-    onError: (error) => {
-      toast.error(error.message || "dsafas");
     },
   });
 };
