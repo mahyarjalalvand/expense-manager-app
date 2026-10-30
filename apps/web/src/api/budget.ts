@@ -17,12 +17,6 @@ export const getMonthlyBudget = async (year: number, month: number): Promise<Mon
   return data as MonthlyBudget;
 };
 
-type BudgetApiError = Error & {
-  code?: string;
-  budgetAmount?: number;
-  monthlyIncome?: number;
-};
-
 export const createBudget = async (data: CreateBudget): Promise<Budget> => {
   const res = await api("budgets", {
     method: "POST",
@@ -32,19 +26,15 @@ export const createBudget = async (data: CreateBudget): Promise<Budget> => {
     body: JSON.stringify(data),
   });
 
+  const resData = await res.json().catch(() => null);
   if (!res.ok) {
-    const errorData = await res.json();
-
-    const error = new Error(errorData.message || "Failed to create budget") as BudgetApiError;
-
-    error.code = errorData.code;
-    error.budgetAmount = errorData.budgetAmount;
-    error.monthlyIncome = errorData.monthlyIncome;
+    const error = new Error(resData.message || "Failed to create budget");
+    Object.assign(error, resData);
 
     throw error;
   }
 
-  return res.json();
+  return resData;
 };
 
 export const updateBudget = async (year: number, month: number, values: BudgetFormValues) => {
